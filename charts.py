@@ -2890,7 +2890,7 @@ fig.add_trace(go.Scatter(
 fig.update_yaxes(tickformat=".0%")
 fig.update_layout(
     title=dict(
-        text='Ridership Relative to Equivalent Day in 2019'
+        text='Ridership Relative to Equivalent Day in Previous Year'
     )
 )
 fig.write_html('./chart_htmls/wmata_comparison.html')
