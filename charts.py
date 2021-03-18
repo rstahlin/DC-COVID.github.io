@@ -2741,7 +2741,7 @@ for ward in WARD_LIST:
         line=dict(
             color=PASTELS[i],
         ),
-        hovertemplate='%{y:.1%}<extra>'+ward+' (Full)</extra>',
+        hovertemplate='%{y:.1%}',
         # legendgroup=str(i)
     ))
     # fig.add_trace(go.Scatter(
@@ -2797,7 +2797,7 @@ fig.update_layout(
         yanchor='middle'
     ),
     title=dict(
-        text='% 65+ Partially/Fully<br>Vaccinated by Ward'
+        text='% 65+ Fully<br>Vaccinated by Ward'
     )
 )
 fig.write_html('./chart_htmls/ward_vax_65.html')
