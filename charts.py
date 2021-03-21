@@ -1850,16 +1850,16 @@ fig.add_trace(go.Bar(
         'Total: %{text:.0f}',
     text = data['Deaths']
 ))
-# fig.add_trace(go.Bar(
-#     x=vax['Date'],
-#     y=(vax['Cumulative Partial Doses: Residents']-vax['Cumulative Full Doses: Residents'].fillna(0))/dc_pop*100,
-#     name='Partially Vaccinated',
-#     marker_color='rgb(184, 230, 186)',
-#     hovertemplate =
-#         '% Partially vaccinated: %{y:.2f}%'+'<br>'+
-#         'Total: %{text:.0f}',
-#     text = vax['Cumulative Partial Doses: Residents']-vax['Cumulative Full Doses: Residents'].fillna(0)
-# ))
+fig.add_trace(go.Bar(
+    x=vax['Date'],
+    y=(vax['Cumulative Partial Doses: Residents']-vax['Cumulative Full Doses: Residents'].fillna(0))/dc_pop*100,
+    name='Partially Vaccinated',
+    marker_color='rgb(184, 230, 186)',
+    hovertemplate =
+        '% Partially vaccinated: %{y:.2f}%'+'<br>'+
+        'Total: %{text:.0f}',
+    text = vax['Cumulative Partial Doses: Residents']-vax['Cumulative Full Doses: Residents'].fillna(0)
+))
 fig.add_trace(go.Bar(
     x=vax['Date'],
     y=vax['Cumulative Full Doses: Residents']/dc_pop*100,
@@ -2105,13 +2105,13 @@ fig.write_html('./chart_htmls/herd_immunity.html')
 fig = go.Figure(layout=layout)
 fig.add_trace(go.Bar(
     x=vax['Date'],
-    y=vax['New Partial Doses: Residents'],
+    y=vax['New Doses: Residents']-vax['New Full Doses: Residents'],
     marker_color='lightgreen',
     name='Resident Partial Doses',
 ))
 fig.add_trace(go.Bar(
     x=vax['Date'],
-    y=vax['New Partial Doses: Non-Residents'],
+    y=vax['New Doses: Non-residents']-vax['New Full Doses: Non-residents'],
     marker_color='skyblue',
     name='Non-resident Partial Doses',
 ))
@@ -2129,7 +2129,7 @@ fig.add_trace(go.Bar(
 ))
 fig.add_trace(go.Scatter(
     x=vax['Date'],
-    y=vax.loc[:,'New Partial Doses: Residents':'New Full Doses: Non-residents'].sum(axis=1).rolling(7).mean(),
+    y=vax.loc[:,'New Doses: Residents':'New Doses: Non-residents'].sum(axis=1).rolling(7).mean(),
     name='7-Day Average (All)',
     mode='lines',
     line=dict(
@@ -2605,10 +2605,10 @@ fig.add_trace(go.Scatter(
         width=3,
         dash='dash'
     ),
-    name='District-Wide (Partially)',
+    name='District-Wide (Recieved First Dose)',
 #     showlegend=False,
 #     legendgroup='district',
-    hovertemplate='%{y:.1%}<extra>District-Wide (Partially)</extra>',
+    hovertemplate='%{y:.1%}<extra>District-Wide (Recieved First Dose)</extra>',
 
 ))
 i = 0
@@ -2684,8 +2684,8 @@ fig.add_trace(go.Scatter(
         width=3,
         dash='dot'
     ),
-    hovertemplate='%{y:.1%}<extra>District-Wide (Partially)</extra>',
-    name='District-Wide (Partially)'
+    hovertemplate='%{y:.1%}<extra>District-Wide (Recieved First Dose)</extra>',
+    name='District-Wide (Recieved First Dose)'
 ))
 i = 0
 for hood in sorted(HOOD_LIST):
@@ -2785,8 +2785,8 @@ fig.add_trace(go.Scatter(
         width=3,
         dash='dot'
     ),
-    hovertemplate='%{y:.1%}<extra>District-Wide (Partially)</extra>',
-    name='District-Wide (Partially)'
+    hovertemplate='%{y:.1%}<extra>District-Wide (Recieved First Dose)</extra>',
+    name='District-Wide (Recieved First Dose)'
     # legendgroup = str(9),
     # showlegend=False
 ))
@@ -2857,7 +2857,7 @@ fig.add_trace(go.Scatter(
         width=3,
         dash='dot'
     ),
-    hovertemplate='%{y:.1%}<extra>District-Wide (Partially)</extra>',
+    hovertemplate='%{y:.1%}<extra>District-Wide (Recieved First Dose)</extra>',
     legendgroup = str(9),
     showlegend=False
 ))
