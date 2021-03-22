@@ -694,7 +694,7 @@ $( document ).ready(function() {
         $('#display-iframe').attr('src', './chart_htmls/vaccination_map_65_pc.html');
 
         // set graph note
-        var graph_note = '<div class="d-flex flex-column align-items-center justify-content-center"><p style="text-align:center"><em>DC\'s dashboard\'s version of this does not show % of seniors vaccinated by neighborhood, but instead shows % of population who are vaccinated seniors.</em></p></div>';
+        var graph_note = '';
         $('#graph-note').html(graph_note);
     });
 
