@@ -2217,7 +2217,7 @@ new_vax_first = vax.loc[:,'New Partial Doses: Residents':'New Partial Doses: Non
 new_vax_first_breakdown = new_vax_first.rolling(7).sum().divide(new_vax_first.sum(axis=1).rolling(7).sum(),axis=0)
 
 colors = ['lightgreen','skyblue','green','blue']
-fig = make_subplots(rows=2,cols=1,shared_xaxes=True,subplot_titles=['All Doses','Partial Doses'],vertical_spacing=0.07,)
+fig = make_subplots(rows=2,cols=1,shared_xaxes=True,subplot_titles=['All Doses','First+J&J Doses'],vertical_spacing=0.07,)
 i = 0
 for vax_cat in new_vax_breakdown.columns:
     fig.add_trace(go.Scatter(
