@@ -2605,10 +2605,10 @@ fig.add_trace(go.Scatter(
         width=3,
         dash='dash'
     ),
-    name='District-Wide (Recieved First Dose)',
+    name='District-Wide<br>(Recieved First Dose)',
 #     showlegend=False,
 #     legendgroup='district',
-    hovertemplate='%{y:.1%}<extra>District-Wide (Recieved First Dose)</extra>',
+    hovertemplate='%{y:.1%}<extra>District-Wide<br>(Recieved First Dose)</extra>',
 
 ))
 i = 0
@@ -2684,8 +2684,8 @@ fig.add_trace(go.Scatter(
         width=3,
         dash='dot'
     ),
-    hovertemplate='%{y:.1%}<extra>District-Wide (Recieved First Dose)</extra>',
-    name='District-Wide (Recieved First Dose)'
+    hovertemplate='%{y:.1%}<extra>District-Wide<br>(Recieved First Dose)</extra>',
+    name='District-Wide<br>(Recieved First Dose)'
 ))
 i = 0
 for hood in sorted(HOOD_LIST):
@@ -2785,8 +2785,8 @@ fig.add_trace(go.Scatter(
         width=3,
         dash='dot'
     ),
-    hovertemplate='%{y:.1%}<extra>District-Wide (Recieved First Dose)</extra>',
-    name='District-Wide (Recieved First Dose)'
+    hovertemplate='%{y:.1%}<extra>District-Wide<br>(Recieved First Dose)</extra>',
+    name='District-Wide<br>(Recieved First Dose)'
     # legendgroup = str(9),
     # showlegend=False
 ))
@@ -2857,7 +2857,7 @@ fig.add_trace(go.Scatter(
         width=3,
         dash='dot'
     ),
-    hovertemplate='%{y:.1%}<extra>District-Wide (Recieved First Dose)</extra>',
+    hovertemplate='%{y:.1%}<extra>District-Wide<br>(Recieved First Dose)</extra>',
     legendgroup = str(9),
     showlegend=False
 ))
