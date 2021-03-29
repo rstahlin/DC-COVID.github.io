@@ -370,13 +370,16 @@ fig.update_layout(
 fig.write_html("./chart_htmls/ages_deaths_pie.html")
 
 #New age chart
-age_demos = pd.read_csv('age_demos.csv',index_col=0).drop(index=['25-34 Cases','35-44 Cases','45-54 Cases','55-64 Cases','65-74 Cases','75+ Cases'])
+age_demos = pd.read_csv('age_demos.csv',index_col=0)
+age_demos = age_demos.loc[['0-4 Cases','5-14 Cases','15-19 Cases','20-24 Cases','25-44 Cases','45-64 Cases','65+ Cases'],:]
 # age_data = data.loc[:,'0-4 Cases':'75+ Cases'].dropna().diff().rolling('7d').sum()/7
 age_data = data.loc[:,'0-4 Cases':'75+ Cases'].diff().rolling(7).mean()
 age_data['25-44 Cases'] = age_data['25-34 Cases']+age_data['35-44 Cases']
 age_data['45-64 Cases'] = age_data['45-54 Cases']+age_data['55-64 Cases']
 age_data['65+ Cases'] = age_data['65-74 Cases']+age_data['75+ Cases']
 age_data = age_data.drop(columns=['25-34 Cases','35-44 Cases','45-54 Cases','55-64 Cases','65-74 Cases','75+ Cases'])
+print(age_data)
+print(age_demos)
 age_data_pc = age_data.divide(age_demos['Population (2019 ACS)'])*10000
 
 fig = go.Figure(layout=layout)
