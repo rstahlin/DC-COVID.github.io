@@ -2104,32 +2104,16 @@ fig.write_html('./chart_htmls/herd_immunity.html')
 # )
 # fig.update_xaxes(range=['2021-01-13',data.index[-1]],title_text='Date of Vaccine Data Batch')
 # fig.write_html('./chart_htmls/new_vaccinations.html')
+vax['New J&J Doses: Residents'] = vax['New Partial Doses: Residents']+vax['New Full Doses: Residents'].replace(np.nan,0)-vax['New Doses: Residents']
+vax['New J&J Doses: Non-Residents'] = vax['New Partial Doses: Non-Residents']+vax['New Full Doses: Non-residents'].replace(np.nan,0)-vax['New Doses: Non-residents']
+
+vax['New First Doses: Residents'] = vax['New Partial Doses: Residents']-vax['New J&J Doses: Residents']
+vax['New First Doses: Non-Residents'] = vax['New Partial Doses: Non-Residents']-vax['New J&J Doses: Non-Residents']
+
+vax['New Second Doses: Residents'] = vax['New Full Doses: Residents']-vax['New J&J Doses: Residents']
+vax['New Second Doses: Non-Residents'] = vax['New Full Doses: Non-residents']-vax['New J&J Doses: Non-Residents']
 
 fig = go.Figure(layout=layout)
-fig.add_trace(go.Bar(
-    x=vax['Date'],
-    y=vax['New Doses: Residents']-vax['New Full Doses: Residents'],
-    marker_color='lightgreen',
-    name='Resident Partial Doses',
-))
-fig.add_trace(go.Bar(
-    x=vax['Date'],
-    y=vax['New Doses: Non-residents']-vax['New Full Doses: Non-residents'],
-    marker_color='skyblue',
-    name='Non-resident Partial Doses',
-))
-fig.add_trace(go.Bar(
-    x=vax['Date'],
-    y=vax['New Full Doses: Residents'],
-    marker_color='darkgreen',
-    name='Resident Full Doses',
-))
-fig.add_trace(go.Bar(
-    x=vax['Date'],
-    y=vax['New Full Doses: Non-residents'],
-    marker_color='darkblue',
-    name='Non-resident Full Doses',
-))
 fig.add_trace(go.Scatter(
     x=vax['Date'],
     y=vax.loc[:,'New Doses: Residents':'New Doses: Non-residents'].sum(axis=1).rolling(7).mean(),
@@ -2139,6 +2123,48 @@ fig.add_trace(go.Scatter(
         color='black'
     )
 ))
+fig.add_trace(go.Bar(
+    x=vax['Date'],
+    y=(vax['New Partial Doses: Residents']-vax['New J&J Doses: Residents']).replace(0,np.nan),
+    marker_color='#c5e1a5',
+    name='Resident 1st Doses',
+))
+
+fig.add_trace(go.Bar(
+    x=vax['Date'],
+    y=vax['New J&J Doses: Residents'].replace(0,np.nan),
+    marker_color='#8bc34a',
+    name='Resident J&J Doses',
+))
+fig.add_trace(go.Bar(
+    x=vax['Date'],
+    y=(vax['New Full Doses: Residents']-vax['New J&J Doses: Residents']).replace(0,np.nan),
+    marker_color='#33691e',
+    name='Resident 2nd Doses',
+))
+
+fig.add_trace(go.Bar(
+    x=vax['Date'],
+    y=(vax['New Partial Doses: Non-Residents']-vax['New J&J Doses: Non-Residents']).replace(0,np.nan),
+    marker_color='#d0efff',
+    name='Non-resident 1st Doses',
+))
+
+
+fig.add_trace(go.Bar(
+    x=vax['Date'],
+    y=vax['New J&J Doses: Non-Residents'].replace(0,np.nan),
+    marker_color='#187bcd',
+    name='Non-resident J&J Doses',
+))
+fig.add_trace(go.Bar(
+    x=vax['Date'],
+    y=(vax['New Full Doses: Non-residents']-vax['New J&J Doses: Non-Residents']).replace(0,np.nan),
+    marker_color='#03254c',
+    name='Non-resident 2nd Doses',
+))
+
+
 fig.update_layout(
     title=dict(
         text='Daily Doses by Residency'
@@ -2146,6 +2172,9 @@ fig.update_layout(
     barmode='stack',
     xaxis=dict(
         showspikes=False,
+    ),
+    yaxis=dict(
+        tickformat = ",.0f"
     ),
     legend=dict(
         bgcolor='rgba(0,0,0,0)',
@@ -2191,7 +2220,7 @@ fig.add_trace(go.Scatter(
 fig.add_trace(go.Scatter(
     x = delivered.index,
     y = delivered,
-    name = 'Total First Doses Delivered',
+    name = 'Total First+J&J Doses Delivered',
     mode='lines',
     line=dict(
         color='grey',
@@ -2203,7 +2232,7 @@ fig.add_trace(go.Scatter(
 ))
 fig.update_layout(
     title=dict(
-        text='Cumulative First Doses Administered by Residency'
+        text='Cumulative First+J&J Doses Administered by Residency'
     ),
     legend=dict(
         bgcolor='rgba(0,0,0,0)',
@@ -2211,24 +2240,28 @@ fig.update_layout(
 )
 fig.write_html('./chart_htmls/all_vaccinations.html')
 
-new_vax = vax.loc[:,'New Partial Doses: Residents':'New Full Doses: Non-residents']
+first_doses_list = ['New First Doses: Residents','New J&J Doses: Residents','New First Doses: Non-Residents','New J&J Doses: Non-Residents']
+all_doses_list = ['New First Doses: Residents','New J&J Doses: Residents','New Second Doses: Residents','New First Doses: Non-Residents','New J&J Doses: Non-Residents','New Second Doses: Non-Residents']
+new_vax = vax.loc[:,all_doses_list]
 new_vax_breakdown = new_vax.rolling(7).sum().divide(new_vax.sum(axis=1).rolling(7).sum(),axis=0)
-new_vax_first = vax.loc[:,'New Partial Doses: Residents':'New Partial Doses: Non-Residents']
+new_vax_first = vax.loc[:,first_doses_list]
 new_vax_first_breakdown = new_vax_first.rolling(7).sum().divide(new_vax_first.sum(axis=1).rolling(7).sum(),axis=0)
 
-colors = ['lightgreen','skyblue','green','blue']
+first_colors = ['#c5e1a5','#8bc34a','#d0efff','#187bcd']
+all_colors = ['#c5e1a5','#8bc34a','#33691e','#d0efff','#187bcd','#03254c']
+
 fig = make_subplots(rows=2,cols=1,shared_xaxes=True,subplot_titles=['All Doses','First+J&J Doses'],vertical_spacing=0.07,)
 i = 0
 for vax_cat in new_vax_breakdown.columns:
     fig.add_trace(go.Scatter(
         x=new_vax_breakdown.index,
-        y=new_vax_breakdown[vax_cat],
+        y=new_vax_breakdown[vax_cat].replace(0,np.nan),
         line=dict(
-            color=colors[i],
-            # width=0
+            color=all_colors[i],
+            width=.5
         ),
         stackgroup='one',
-        legendgroup='group'+str(i+1),
+        legendgroup=vax_cat,
         mode='lines',
         name=vax_cat
     ),row=1,col=1)
@@ -2238,13 +2271,13 @@ i = 0
 for vax_cat in new_vax_first_breakdown.columns:
     fig.add_trace(go.Scatter(
         x=new_vax_first_breakdown.index,
-        y=new_vax_first_breakdown[vax_cat],
+        y=new_vax_first_breakdown[vax_cat].replace(0,np.nan),
         line=dict(
-            color=colors[i],
-            # width=0
+            color=first_colors[i],
+            width=.5
         ),
         stackgroup='one',
-        legendgroup='group'+str(i+1),
+        legendgroup=vax_cat,
         showlegend = False,
         mode='lines',
         name=vax_cat
@@ -2273,7 +2306,7 @@ fig.update_layout(
     spikedistance =  -1,
     legend=dict(
         x=0.5,
-        y=-.1,
+        y=-.2,
         xanchor='center',
         bgcolor='rgba(0,0,0,0)',
         orientation='h'
@@ -2288,11 +2321,9 @@ fig.update_layout(
 fig.update_traces(xaxis="x2")
 fig.write_html('./chart_htmls/vaccinations_breakdown.html')
 
-colors_cum = ['lightgreen','green','skyblue','blue']
-
-vax_cum = vax.loc[:,'Cumulative Partial Doses: Residents':'Cumulative Full Doses: Non-residents']
+vax_cum = vax.loc[:,all_doses_list].cumsum()
 vax_cum_breakdown = vax_cum.divide(vax_cum.sum(axis=1),axis=0)
-vax_first_cum = vax.loc[:,['Cumulative Partial Doses: Residents','Cumulative Partial Doses: Non-Residents']]
+vax_first_cum = vax.loc[:,first_doses_list].cumsum()
 vax_first_cum_breakdown = vax_first_cum.divide(vax_first_cum.sum(axis=1),axis=0)
 
 fig = make_subplots(rows=2,cols=1,shared_xaxes=True,subplot_titles=['All Doses','Partial Doses'],vertical_spacing=0.07,)
@@ -2302,11 +2333,11 @@ for vax_cat in vax_cum_breakdown.columns:
         x=vax_cum_breakdown.index,
         y=vax_cum_breakdown[vax_cat],
         line=dict(
-            color=colors_cum[i],
+            color=all_colors[i],
             # width=0
         ),
         stackgroup='one',
-        legendgroup='group'+str(i+1),
+        legendgroup=vax_cat,
         mode='lines',
         name=vax_cat
     ),row=1,col=1)
@@ -2318,16 +2349,16 @@ for vax_cat in vax_first_cum_breakdown.columns:
         x=vax_first_cum_breakdown.index,
         y=vax_first_cum_breakdown[vax_cat],
         line=dict(
-            color=colors_cum[i],
+            color=first_colors[i],
             # width=0
         ),
         stackgroup='one',
-        legendgroup='group'+str(i+1),
+        legendgroup=vax_cat,
         showlegend = False,
         mode='lines',
         name=vax_cat
     ),row=2,col=1)
-    i+=2
+    i+=1
 
 fig.update_yaxes(
     tickformat='.1%',
