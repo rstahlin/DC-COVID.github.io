@@ -2931,6 +2931,63 @@ fig.update_layout(
 )
 fig.write_html('./chart_htmls/ward_vax.html')
 
+age_demos = pd.read_csv('../rstahlin.github.io/age_demos.csv',index_col=2)
+vax_age_demos = age_demos.loc[['16-19','20-44','45-64','65+'],'Population (2019 ACS)']
+vax_age_partial = vax.loc[:,'Partially Vaccinated: 16-19':'Partially Vaccinated: 65+']
+vax_age_fully = vax.loc[:,'Fully Vaccinated: 16-19':'Fully Vaccinated: 65+']
+vax_age_partial.columns = vax_age_demos.index.values
+vax_age_fully.columns = vax_age_demos.index.values
+vax_age_colors = [G10[2],G10[4],G10[5],G10[6]]
+
+fig = go.Figure(layout=layout)
+i=0
+for agegroup in vax_age_partial.columns:
+    fig.add_trace(go.Scatter(
+        x = vax_age_fully[agegroup].dropna().index,
+        y = vax_age_fully[agegroup].dropna().divide(vax_age_demos[agegroup]),
+        name = agegroup+" (Fully)",
+        mode='lines+markers',
+        line=dict(
+            width=2,
+            color = vax_age_colors[i]
+        ),
+        hovertemplate='%{y:.1%}',
+        legendgroup = agegroup
+    
+    ))
+    fig.add_trace(go.Scatter(
+        x = (vax_age_fully[agegroup]+vax_age_partial[agegroup]).dropna().index,
+        y = (vax_age_fully[agegroup]+vax_age_partial[agegroup]).dropna().divide(vax_age_demos[agegroup]),
+        name = agegroup+" (1st Dose)",
+        mode='lines+markers',
+        line=dict(
+            width=2,
+            dash='dot',
+            color = vax_age_colors[i]
+        ),
+        hovertemplate='%{y:.1%}',
+        legendgroup = agegroup
+    
+    ))
+    i+=1
+fig.update_layout(
+    yaxis=dict(
+        tickformat='%.0'
+    ),
+    legend=dict(
+        orientation='h',
+        bgcolor='rgba(0,0,0,0)',
+        x=.5,
+        y=-.1,
+        yanchor='top',
+        xanchor='center'
+    ),
+    title=dict(
+        text='Cumulative Vaccination<br>Rates by Age Group'
+    )
+)
+fig.write_html('./chart_htmls/age_vax.html')
+
 
 fig = go.Figure(layout=layout)
 fig.add_trace(go.Scatter(

@@ -313,6 +313,13 @@ $( document ).ready(function() {
         var graph_note = '<p style="text-align:center"><em>Because D.C. overwites its per capita age data, this data is a recreation from a crowdsourced archive of downloaded files from the D.C. Box site.<br>Do you have a downloaded copy of <a href="https://dcgov.app.box.com/v/DCHealthStatisticsData">this spreadsheet</a> from before November?<br><a href="mailto:ryan.stahlin@gmail.com">Send me an email!</a></em></p>';
         $('#graph-note').html(graph_note);
     });
+    $('#age-data-vaccinations-tab').click(function(){
+        $('#display-iframe').attr('src', './chart_htmls/age_vax.html');
+
+        // set graph note
+        var graph_note = '<p style="text-align:center">Vaccination data by age is not retroactively corrected for reporting delays.</p>';
+        $('#graph-note').html(graph_note);
+    });
 
     // display case breakdown by age graph on tab click
     $('#age-data-case-breakdown-tab').click(function(){
