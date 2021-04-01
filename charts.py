@@ -2988,6 +2988,53 @@ fig.update_layout(
 )
 fig.write_html('./chart_htmls/age_vax.html')
 
+fig = go.Figure(layout=layout)
+i=0
+for agegroup in vax_age_partial.columns:
+    fig.add_trace(go.Scatter(
+        x = vax_age_fully[agegroup].dropna().index,
+        y = vax_age_fully[agegroup].dropna(),
+        name = agegroup+" (Fully)",
+        mode='lines+markers',
+        line=dict(
+            width=2,
+            color = vax_age_colors[i]
+        ),
+        legendgroup = agegroup
+    
+    ))
+    fig.add_trace(go.Scatter(
+        x = (vax_age_fully[agegroup]+vax_age_partial[agegroup]).dropna().index,
+        y = (vax_age_fully[agegroup]+vax_age_partial[agegroup]).dropna(),
+        name = agegroup+" (1st Dose)",
+        mode='lines+markers',
+        line=dict(
+            width=2,
+            dash='dot',
+            color = vax_age_colors[i]
+        ),
+        legendgroup = agegroup
+    
+    ))
+    i+=1
+fig.update_layout(
+    yaxis=dict(
+        tickformat=',.0f'
+    ),
+    legend=dict(
+        orientation='h',
+        bgcolor='rgba(0,0,0,0)',
+        x=.5,
+        y=-.1,
+        yanchor='top',
+        xanchor='center'
+    ),
+    title=dict(
+        text='Cumulative Vaccinations<br>by Age Group'
+    )
+)
+fig.write_html('./chart_htmls/age_vax_totals.html')
+
 
 fig = go.Figure(layout=layout)
 fig.add_trace(go.Scatter(

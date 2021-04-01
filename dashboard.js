@@ -320,6 +320,13 @@ $( document ).ready(function() {
         var graph_note = '<p style="text-align:center">Vaccination data by age is not retroactively corrected for reporting delays.</p>';
         $('#graph-note').html(graph_note);
     });
+    $('#age-data-vaccinations-totals-tab').click(function(){
+        $('#display-iframe').attr('src', './chart_htmls/age_vax_totals.html');
+
+        // set graph note
+        var graph_note = '<p style="text-align:center">Vaccination data by age is not retroactively corrected for reporting delays.</p>';
+        $('#graph-note').html(graph_note);
+    });
 
     // display case breakdown by age graph on tab click
     $('#age-data-case-breakdown-tab').click(function(){
