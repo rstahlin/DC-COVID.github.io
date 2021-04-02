@@ -114,20 +114,20 @@ fig.add_trace(go.Scatter(
     hovertemplate='%{y:,.1f}'
 
 ))
-fit = np.polyfit(pd.to_numeric(bar_display['Date'].iloc[1:]),bar_display['Positives'].diff().iloc[1:],deg=4)
+# fit = np.polyfit(pd.to_numeric(bar_display['Date'].iloc[1:]),bar_display['Positives'].diff().iloc[1:],deg=4)
 
-fig.add_trace(go.Scatter(
-    x=pd.date_range('2020-03-13','2021-04-30'),
-    y=np.polyval(fit,pd.to_numeric(pd.date_range('2020-03-13','2021-04-30'))),
-    name='Quartic Fit',
-    mode='lines',
-    line=dict(
-        color='purple',
-        dash='dot'
-    ),
-    hovertemplate='%{y:,.1f}'
+# fig.add_trace(go.Scatter(
+#     x=pd.date_range('2020-03-13','2021-04-30'),
+#     y=np.polyval(fit,pd.to_numeric(pd.date_range('2020-03-13','2021-04-30'))),
+#     name='Quartic Fit',
+#     mode='lines',
+#     line=dict(
+#         color='purple',
+#         dash='dot'
+#     ),
+#     hovertemplate='%{y:,.1f}'
 
-))
+# ))
 fig.add_annotation(
             x = '2020-12-26',
             y = 492,
