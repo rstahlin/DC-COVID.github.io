@@ -2347,7 +2347,7 @@ vax_cum_breakdown = vax_cum.divide(vax_cum.sum(axis=1),axis=0)
 vax_first_cum = vax.loc[:,first_doses_list].cumsum()
 vax_first_cum_breakdown = vax_first_cum.divide(vax_first_cum.sum(axis=1),axis=0)
 
-fig = make_subplots(rows=2,cols=1,shared_xaxes=True,subplot_titles=['All Doses','Partial Doses'],vertical_spacing=0.07,)
+fig = make_subplots(rows=2,cols=1,shared_xaxes=True,subplot_titles=['All Doses','First + J&J Doses'],vertical_spacing=0.07,)
 i = 0
 for vax_cat in vax_cum_breakdown.columns:
     fig.add_trace(go.Scatter(
