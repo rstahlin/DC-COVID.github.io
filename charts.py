@@ -2931,7 +2931,115 @@ fig.update_layout(
 )
 fig.write_html('./chart_htmls/ward_vax.html')
 
-age_demos = pd.read_csv('../rstahlin.github.io/age_demos.csv',index_col=2)
+to_plot = hood_vax_pc.drop(columns=['National Mall','DC Medical Center','Stadium Armory']).diff()
+
+nrows = 11
+ncols = 11
+
+# vmin, vmax = to_plot.iloc[-1,:].min(), to_plot.iloc[-1,:].max()
+
+
+norm = matplotlib.colors.Normalize(vmin=0, vmax=50)
+cmap = matplotlib.cm.get_cmap('Greens') # yellow to orange to red
+
+fig = make_subplots(
+    rows=nrows,
+    cols=ncols,
+    shared_xaxes=True,
+    shared_yaxes=True,
+    vertical_spacing=0.005,
+    horizontal_spacing=0.005
+)
+ymax = np.max(np.max(to_plot))*1.1
+
+
+for nhood in hood_data_pc.columns:
+    color = 'rgba' + str(cmap(norm(np.round(hood_vax_pc[nhood][-1]*100),4)))[:]
+    if nhood not in ['National Mall','Naval Station & Air Force']:
+        fig.add_trace(
+            go.Bar(
+                x=hood_vax_pc.index,
+                y=hood_vax_pc[nhood].diff(),
+                marker_color='green',
+                name=nhood,
+                hovertemplate="%{y:.1%}",
+#                 marker=dict(
+#                     size = 4
+#                 )
+
+            ),
+            row=diamond_dict[nhood][0],
+            col=diamond_dict[nhood][1],
+        )
+    else:
+        fig.add_trace(
+            go.Bar(
+                x=hood_vax_pc.index,
+                y=hood_vax_pc[nhood].diff(),
+                marker_color='grey',
+                name=nhood,
+                hovertemplate="%{y:.1%} (May be anomalous)",
+#                 marker=dict(
+#                     size = 4
+#                 )
+            ),
+            row=diamond_dict[nhood][0],
+            col=diamond_dict[nhood][1]
+        )
+#     fig.add_trace(
+#         go.Scatter(
+#             x=['2021-02-10',np.datetime64('today')],
+#             y= [ymax*1.5,ymax*1.5],
+#             fill='tozeroy',
+#             fillcolor=color,
+#             hoverinfo='skip',
+#         ),
+#         row=diamond_dict[nhood][0],
+#         col=diamond_dict[nhood][1],
+#     )
+
+
+fig.update_layout(
+    # plot_bgcolor='rgb(247, 246, 218)',
+    # plot_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='white',
+    hovermode='x',
+    font=dict(
+        family='Arial'
+    ),
+    title = dict(
+        x=0.5,
+        text='Weekly Full Vaccinations<br>per Capita Reported by Neighborhood'
+    ),
+    showlegend=False,
+    width=750,
+    height=750
+)
+fig.update_xaxes(
+    range=[to_plot.index[0]-np.timedelta64(2, 'D'),to_plot.index[-1]+np.timedelta64(2, 'D')],
+    showspikes=False,
+    showticklabels = False,
+    spikedash = 'solid',
+    spikecolor = 'black',
+    spikemode  = 'across',
+    spikesnap = 'cursor',
+    fixedrange = True
+)
+
+fig.update_yaxes(
+    rangemode = 'tozero',
+    showticklabels = False,
+    showgrid=False,
+    range=[0,ymax],
+    tickformat=".1%",
+    fixedrange = True
+)
+fig.update_layout(
+    paper_bgcolor='rgba(0,0,0,0)'
+)
+fig.write_html('./chart_htmls/nhood_matrix_vax_pc_weekly.html')
+
+age_demos = pd.read_csv('age_demos.csv',index_col=2)
 vax_age_demos = age_demos.loc[['16-19','20-44','45-64','65+'],'Population (2019 ACS)']
 vax_age_partial = vax.loc[:,'Partially Vaccinated: 16-19':'Partially Vaccinated: 65+']
 vax_age_fully = vax.loc[:,'Fully Vaccinated: 16-19':'Fully Vaccinated: 65+']
