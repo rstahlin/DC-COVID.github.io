@@ -609,7 +609,7 @@ $( document ).ready(function() {
         $('#tab-note').html(tab_note_html);
 
         // set graph note
-        var graph_note = '<div class="d-flex flex-column align-items-center justify-content-center"><p><em> Individual School data comes from <a href="https://dcpsreopenstrong.com/category/articles/">DCPS ReOpen Strong</a> and may not reflect the most recent changes.<br>Total number of students comes from OpenData and may not be up to date.</em></p></div>';
+        var graph_note = '<div class="d-flex flex-column align-items-center justify-content-center"><p><em> Individual School data comes from <a href="https://dcpsreopenstrong.com/category/articles/">DCPS ReOpen Strong</a> and may not reflect the most recent changes.<br>Total number of students comes from OpenData and may not be up to date.<br>On 4/22, the quarantine period for classrooms changed to 10 days from 14 days.</em></p></div>';
         $('#graph-note').html(graph_note);
     });
 
