@@ -3183,7 +3183,7 @@ fig.add_trace(go.Scatter(
         x=vax['Doses Delivered: District Allocation'].dropna().index,
         y=vax['Doses Delivered: District Allocation'].dropna(),
         line=dict(
-            color='gold',
+            color='#C9AE5D',
             # width=0
         ),
 #         stackgroup='one',
@@ -3199,7 +3199,7 @@ fig.add_trace(go.Scatter(
         x=vax['Doses Administered: District Allocation'].dropna().index,
         y=vax['Doses Administered: District Allocation'].dropna(),
         line=dict(
-            color='gold',
+            color='#C9AE5D',
             # width=0
         ),
         stackgroup='two',
