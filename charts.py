@@ -2208,58 +2208,58 @@ fig.update_layout(
 fig.write_html('./chart_htmls/daily_vaccinations.html')
 
 
-fig = go.Figure(layout=layout)
-residency=vax.loc[:,['Cumulative Partial Doses: Residents','Cumulative Partial Doses: Non-Residents']].dropna()
-delivered = vax.loc[:,'Total Delivered'].dropna()
-fig.add_trace(go.Scatter(
-    x = residency.index,
-    y = residency['Cumulative Partial Doses: Residents'],
-    name = 'Residents',
-    line=dict(
-        color='lightgreen',
-        width=0
-    ),
-    mode='lines',
-    stackgroup='group1',
-    text=residency['Cumulative Partial Doses: Residents'].divide(residency.sum(axis=1))*100,
-    hovertemplate='Total: %{y:.0i}<br>% of All 1st Doses: %{text:.1f}%'
-))
-fig.add_trace(go.Scatter(
-    x = residency.index,
-    y = residency['Cumulative Partial Doses: Non-Residents'],
-    name = 'Non-Residents',
-    line=dict(
-        color='skyblue',
-        width=0
-    ),
-    mode='lines',
-    stackgroup='group1',
-    text=residency['Cumulative Partial Doses: Non-Residents'].divide(residency.sum(axis=1))*100,
-    hovertemplate='Total: %{y:.0i}<br>% of All 1st Doses: %{text:.1f}%'
-))
+# fig = go.Figure(layout=layout)
+# residency=vax.loc[:,['Cumulative Partial Doses: Residents','Cumulative Partial Doses: Non-Residents']].dropna()
+# delivered = vax.loc[:,'Total Delivered'].dropna()
+# fig.add_trace(go.Scatter(
+#     x = residency.index,
+#     y = residency['Cumulative Partial Doses: Residents'],
+#     name = 'Residents',
+#     line=dict(
+#         color='lightgreen',
+#         width=0
+#     ),
+#     mode='lines',
+#     stackgroup='group1',
+#     text=residency['Cumulative Partial Doses: Residents'].divide(residency.sum(axis=1))*100,
+#     hovertemplate='Total: %{y:.0i}<br>% of All 1st Doses: %{text:.1f}%'
+# ))
+# fig.add_trace(go.Scatter(
+#     x = residency.index,
+#     y = residency['Cumulative Partial Doses: Non-Residents'],
+#     name = 'Non-Residents',
+#     line=dict(
+#         color='skyblue',
+#         width=0
+#     ),
+#     mode='lines',
+#     stackgroup='group1',
+#     text=residency['Cumulative Partial Doses: Non-Residents'].divide(residency.sum(axis=1))*100,
+#     hovertemplate='Total: %{y:.0i}<br>% of All 1st Doses: %{text:.1f}%'
+# ))
 
-fig.add_trace(go.Scatter(
-    x = delivered.index,
-    y = delivered,
-    name = 'Total First+J&J Doses Delivered',
-    mode='lines',
-    line=dict(
-        color='grey',
-        width=4
-    ),
-    hovertemplate='%{y:,.0f}, '+delivered.diff().map('{:,.0f}'.format)+' Newly Delivered',
-                #   '<br>%{text:.1%} Administered',
-    text = residency.sum(axis=1).divide(delivered)
-))
-fig.update_layout(
-    title=dict(
-        text='Cumulative First+J&J Doses Administered by Residency'
-    ),
-    legend=dict(
-        bgcolor='rgba(0,0,0,0)',
-    )
-)
-fig.write_html('./chart_htmls/all_vaccinations.html')
+# fig.add_trace(go.Scatter(
+#     x = delivered.index,
+#     y = delivered,
+#     name = 'Total First+J&J Doses Delivered',
+#     mode='lines',
+#     line=dict(
+#         color='grey',
+#         width=4
+#     ),
+#     hovertemplate='%{y:,.0f}, '+delivered.diff().map('{:,.0f}'.format)+' Newly Delivered',
+#                 #   '<br>%{text:.1%} Administered',
+#     text = residency.sum(axis=1).divide(delivered)
+# ))
+# fig.update_layout(
+#     title=dict(
+#         text='Cumulative First+J&J Doses Administered by Residency'
+#     ),
+#     legend=dict(
+#         bgcolor='rgba(0,0,0,0)',
+#     )
+# )
+# fig.write_html('./chart_htmls/all_vaccinations.html')
 
 first_doses_list = ['New First Doses: Residents','New J&J Doses: Residents','New First Doses: Non-Residents','New J&J Doses: Non-Residents']
 all_doses_list = ['New First Doses: Residents','New J&J Doses: Residents','New Second Doses: Residents','New First Doses: Non-Residents','New J&J Doses: Non-Residents','New Second Doses: Non-Residents']
@@ -3142,6 +3142,145 @@ fig.update_layout(
     )
 )
 fig.write_html('./chart_htmls/age_vax_totals.html')
+
+fig = make_subplots(
+    rows=2, cols=3,
+    specs=[[{"rowspan": 2, "colspan": 2}, None, {}],
+           [None, None,{}]],
+    subplot_titles=['All Doses/Supply','District Allocation','Federal Partnership'])
+i = 0
+for vax_cat in vax_cum.columns:
+    fig.add_trace(go.Scatter(
+        x=vax_cum.index,
+        y=vax_cum[vax_cat],
+        line=dict(
+            color=all_colors[i],
+            # width=0
+        ),
+        stackgroup='one',
+        legendgroup=vax_cat,
+        mode='lines',
+        name=vax_cat.replace('New ','')
+    ),row=1,col=1)
+    i+=1
+    
+fig.add_trace(go.Scatter(
+        x=vax['Doses Delivered: District Allocation'].dropna().index,
+        y=(vax['Doses Delivered: District Allocation']+vax['Doses Delivered: Federal Partnership']).dropna(),
+        line=dict(
+            color='black',
+            # width=0
+        ),
+#         stackgroup='one',
+#         legendgroup='Total Doses Delivered',
+        mode='lines',
+        name='Total Doses Delivered'
+    ),
+    row=1,
+    col=1
+)
+fig.add_trace(go.Scatter(
+        x=vax['Doses Delivered: District Allocation'].dropna().index,
+        y=vax['Doses Delivered: District Allocation'].dropna(),
+        line=dict(
+            color='gold',
+            # width=0
+        ),
+#         stackgroup='one',
+#         legendgroup='District Allocation',
+        mode='lines',
+        name='Delivered (District Allocation)',
+        showlegend=False,
+    ),
+    row=1,
+    col=3
+)
+fig.add_trace(go.Scatter(
+        x=vax['Doses Administered: District Allocation'].dropna().index,
+        y=vax['Doses Administered: District Allocation'].dropna(),
+        line=dict(
+            color='gold',
+            # width=0
+        ),
+        stackgroup='two',
+#         legendgroup='Total Doses Delivered',
+        mode='lines+markers',
+        name='Administered (District Allocation)',
+        showlegend=False
+    ),
+    row=1,
+    col=3
+)
+fig.add_trace(go.Scatter(
+        x=vax['Doses Delivered: Federal Partnership'].dropna().index,
+        y=vax['Doses Delivered: Federal Partnership'].dropna(),
+        line=dict(
+            color='crimson',
+            # width=0
+        ),
+#         stackgroup='one',
+#         legendgroup='District Allocation',
+        mode='lines',
+        name='Delivered (Federal Partnership)',
+        showlegend=False,
+    ),
+    row=2,
+    col=3
+)
+fig.add_trace(go.Scatter(
+        x=vax['Doses Administered: Federal Partnership'].dropna().index,
+        y=vax['Doses Administered: Federal Partnership'].dropna(),
+        line=dict(
+            color='crimson',
+            # width=0
+        ),
+        stackgroup='two',
+#         legendgroup='Total Doses Delivered',
+        mode='lines+markers',
+        name='Administered (Federal Partnership)',
+        showlegend=False
+    ),
+    row=2,
+    col=3
+)
+
+fig.update_xaxes(
+    showspikes=True,
+    spikedash = 'solid',
+    spikemode  = 'across',
+    spikesnap = 'cursor',
+    spikecolor = 'black',
+    spikethickness = 1,
+    ticks='outside',
+)
+fig.update_xaxes(
+    range=['2020-12-18',vax.index[-1]],
+    row=1,
+    col=1
+    
+)
+fig.update_yaxes(
+#     tickformat='.1%',
+    showgrid=True,
+    gridcolor='grey',
+)
+fig.update_layout(
+    spikedistance =  -1,
+    legend=dict(
+        x=0.5,
+        y=-.2,
+        xanchor='center',
+        bgcolor='rgba(0,0,0,0)',
+        orientation='h'
+    ),
+    plot_bgcolor='rgba(0,0,0,0)',
+    hovermode='x',
+    title = dict(
+        x=0.5,
+        text="Cumulative Administered<br>Doses vs. Supply"
+    ),
+)
+fig.write_html('./chart_htmls/all_vaccinations.html')
 
 
 fig = go.Figure(layout=layout)

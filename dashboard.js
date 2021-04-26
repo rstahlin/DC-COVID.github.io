@@ -673,7 +673,7 @@ $( document ).ready(function() {
         $('#display-iframe').attr('src', './chart_htmls/all_vaccinations.html');
 
         // set graph note
-        var graph_note = '<div class="d-flex flex-column align-items-center justify-content-center"><p style="text-align:center"><em>A large proportion of essential workers in D.C. reside in Virginia or Maryland.</em></p></div>';
+        var graph_note = '<div class="d-flex flex-column align-items-center justify-content-center"><p style="text-align:center"><em>Administration data broken down by allocation category is not retroactively corrected for reporting delays and errors.</em></p></div>';
         $('#graph-note').html(graph_note);
     });
     // display graph on tab click
