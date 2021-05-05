@@ -237,6 +237,9 @@ fig.update_layout(
     xaxis=dict(
         showspikes = False,
     ),
+    yaxis=dict(
+        rangemode='nonnegative'
+    )
 )
 fig.write_html("./chart_htmls/tests.html")
 
@@ -1432,7 +1435,7 @@ fig = make_subplots(
     horizontal_spacing=0.005
 )
 ymax = np.max(np.max(to_plot.iloc[-15:-1,:]))*1.1
-
+hood_data_pc = hood_data_pc.dropna()
 
 for nhood in hood_data_pc.columns:
     color = 'rgba' + str(cmap(norm(np.round(hood_data_pc[nhood][-1]),4)))[:]
