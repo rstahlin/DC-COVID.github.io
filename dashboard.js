@@ -694,6 +694,15 @@ $( document ).ready(function() {
         $('#graph-note').html(graph_note);
     });
 
+    // display graph on tab click
+    $('#vaccination-data-cdc-comparison-tab').click(function(){
+        $('#display-iframe').attr('src', './chart_htmls/cdc_comparison.html');
+
+        // set graph note
+        var graph_note = '<div class="d-flex flex-column align-items-center justify-content-center"><p style="text-align:center">CDC data includes DC residents vaccinated out of state, by federal agencies, and by some other federal programs.<br>CDC data is reported daily, percentages may vary slightly from other trackers due to differences in population estimates.</em></p></div>';
+        $('#graph-note').html(graph_note);
+    });
+
      // display graph on tab click
     $('#vaccination-data-vaccination-map-tab').click(function(){
         $('#display-iframe').attr('src', './chart_htmls/vaccination_map_cumulative.html');
