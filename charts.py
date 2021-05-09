@@ -3425,6 +3425,83 @@ fig.update_layout(
 )
 fig.write_html('./chart_htmls/cdc_comparison.html')
 
+fig = go.Figure(layout=layout)
+fig.add_trace(go.Scatter(
+    x = dc_cdc.index,
+    y = dc_cdc['Administered_Dose1_Recip']/ward_demos.loc['All Wards','Population (2019 ACS)'],
+    name = 'All (Partially)',
+    line=dict(
+        color = 'teal',
+        dash='dot'
+    )
+))
+fig.add_trace(go.Scatter(
+    x = dc_cdc.index,
+    y = dc_cdc['Administered_Dose1_Recip_18Plus']/ward_demos.loc['All Wards','18+ (2019 ACS)'],
+    name = '18+ (Partially)',
+    line=dict(
+        color = 'orange',
+        dash='dot'
+    )
+))
+
+fig.add_trace(go.Scatter(
+    x = dc_cdc.index,
+    y = dc_cdc['Administered_Dose1_Recip_65Plus']/ward_demos.loc['All Wards','65+ (2019 ACS)'],
+    name = '65+ (Partially)',
+    line=dict(
+        color = '#DD4477',
+        dash='dot'
+    )
+))
+fig.add_trace(go.Scatter(
+    x = dc_cdc.index,
+    y = dc_cdc['Series_Complete_Yes']/ward_demos.loc['All Wards','Population (2019 ACS)'],
+    name = 'All (Fully)',
+    line=dict(
+        color = 'teal',
+    )
+))
+
+fig.add_trace(go.Scatter(
+    x = dc_cdc.index,
+    y = dc_cdc['Series_Complete_18Plus']/ward_demos.loc['All Wards','18+ (2019 ACS)'],
+    name = '18+ (Fully)',
+    line=dict(
+        color = 'orange',
+    )
+))
+
+fig.add_trace(go.Scatter(
+    x = dc_cdc.index,
+    y = dc_cdc['Series_Complete_65Plus']/ward_demos.loc['All Wards','65+ (2019 ACS)'],
+    name = '65+ (Fully)',
+    line=dict(
+        color = '#DD4477',
+    )
+))
+
+fig.update_layout(
+    legend=dict(
+        x=.5,
+        y=-.3,
+        orientation='h',
+        xanchor='center',
+    ),
+    yaxis=dict(
+        tickformat='.1%'
+    ),
+    xaxis=dict(
+        title=dict(
+            text='Date Reported'
+        )
+    ),
+    title=dict(
+        text='Cumulative Vaccinations<br> of DC Residents (CDC Data)'
+    )
+)
+fig.write_html('./chart_htmls/cdc_vaccinations.html')
+
 # fig = go.Figure(layout=layout)
 # fig.add_trace(go.Scatter(
 #     x=data['Date'],
