@@ -430,6 +430,15 @@ $( document ).ready(function() {
     });
 
     // display graph on tab click
+    $('#ward-data-vaccinations-16-tab').click(function(){
+        $('#display-iframe').attr('src', './chart_htmls/ward_vax_16.html');
+
+        // set graph note
+        var graph_note = '<p style="text-align:center"> <em> Note: Decreases in fully vaccinated rates are due to data corrections.</em> </p>'
+        $('#graph-note').html(graph_note);
+    });
+
+    // display graph on tab click
     $('#ward-data-tests-tab').click(function(){
         $('#display-iframe').attr('src', './chart_htmls/wards_tests.html');
 

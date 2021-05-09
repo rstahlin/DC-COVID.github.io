@@ -2791,6 +2791,79 @@ ward_vax_65_partial = vax.loc[:,'Ward 1 65+ Partial':'Ward 8 65+ Partial'].dropn
 ward_vax_65_partial.columns = WARD_LIST
 ward_vax_65_partial = ward_vax_65_partial.divide(ward_demos['65+ (2019 ACS)'])
 
+ward_vax_16 = vax.loc[:,'Ward 1':'Ward 8'].dropna()
+ward_vax_16 = ward_vax_16.divide(ward_demos['16+ (2019 ACS)'])
+
+fig = go.Figure(layout=layout)
+i=0
+for ward in WARD_LIST:
+    fig.add_trace(go.Scatter(
+        x = ward_vax_16.index,
+        y = ward_vax_16[ward],
+        name = ward,
+        mode='markers+lines',
+        line=dict(
+            color=PASTELS[i],
+        ),
+        hovertemplate='%{y:.1%}',
+        # legendgroup=str(i)
+    ))
+    # fig.add_trace(go.Scatter(
+    #     x = ward_vax_65_partial.index,
+    #     y = ward_vax_65_partial[ward],
+    #     mode='markers+lines',
+    #     line=dict(
+    #         color=PASTELS[i],
+    #         dash='dash'
+    #     ),
+    #     name=ward,
+    #     hovertemplate='%{y:.1%}<extra>'+ward+' (Partial)</extra>',
+    #     legendgroup=str(i),
+    #     showlegend=False,
+
+    # ))
+    i+=1
+fig.add_trace(go.Scatter(
+    x = vax['Cumulative Full Doses: Residents'].index,
+    y = vax['Cumulative Full Doses: Residents']/ward_demos.loc['All Wards','16+ (2019 ACS)'],
+    mode='lines',
+    line=dict(
+        color='black',
+        width=3
+    ),
+    hovertemplate='%{y:.1%}<extra>District-Wide (Fully)</extra>',
+    legendgroup = str(9),
+    name='District-Wide'
+))
+
+fig.add_trace(go.Scatter(
+    x = vax['Cumulative Partial Doses: Residents'].dropna().index,
+    y = vax['Cumulative Partial Doses: Residents'].dropna()/ward_demos.loc['All Wards','16+ (2019 ACS)'],
+    mode='lines',
+    line=dict(
+        color='black',
+        width=3,
+        dash='dot'
+    ),
+    hovertemplate='%{y:.1%}<extra>District-Wide<br>(Recieved First Dose)</extra>',
+    legendgroup = str(9),
+    showlegend=False
+))
+fig.update_layout(
+    yaxis=dict(
+        tickformat = '.1%',
+    ),
+    legend=dict(
+        x=1,
+        y=.5,
+        yanchor='middle'
+    ),
+    title=dict(
+        text='% 16+ Fully<br>Vaccinated by Ward'
+    )
+)
+fig.write_html('./chart_htmls/ward_vax_16.html')
+
 fig = go.Figure(layout=layout)
 i=0
 for ward in WARD_LIST:
@@ -2933,6 +3006,7 @@ fig.update_layout(
     )
 )
 fig.write_html('./chart_htmls/ward_vax.html')
+
 
 to_plot = hood_vax_pc.drop(columns=['National Mall','DC Medical Center','Stadium Armory']).diff()
 
