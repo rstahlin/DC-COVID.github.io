@@ -3502,50 +3502,50 @@ fig.update_layout(
 )
 fig.write_html('./chart_htmls/cdc_vaccinations.html')
 
-# fig = go.Figure(layout=layout)
-# fig.add_trace(go.Scatter(
-#     x=data['Date'],
-#     y=data['Rail Change'],
-#     name='Rail',
-#     mode='lines'
-# ))
-# fig.add_trace(go.Scatter(
-#     x=data['Date'],
-#     y=data['Bus Change'],
-#     name='Bus',
-#     mode='lines'
-# ))
-# fig.update_yaxes(tickformat=".0%")
-# fig.update_layout(
-#     title=dict(
-#         text='Ridership Relative to Equivalent Day in Previous Year'
-#     )
-# )
-# fig.write_html('./chart_htmls/wmata_comparison.html')
+fig = go.Figure(layout=layout)
+fig.add_trace(go.Scatter(
+    x=data['Date'],
+    y=data['Rail Change'],
+    name='Rail',
+    mode='lines'
+))
+fig.add_trace(go.Scatter(
+    x=data['Date'],
+    y=data['Bus Change'],
+    name='Bus',
+    mode='lines'
+))
+fig.update_yaxes(tickformat=".0%")
+fig.update_layout(
+    title=dict(
+        text='Ridership Relative to Equivalent Day in Previous Year'
+    )
+)
+fig.write_html('./chart_htmls/wmata_comparison.html')
 
-# fig = go.Figure(layout=layout)
-# fig.add_trace(go.Bar(
-#     x=data['Date'],
-#     y=data['Rail Ridership'],
-#     name='Rail',
-# ))
-# fig.add_trace(go.Bar(
-#     x=data['Date'],
-#     y=data['Bus Ridership'],
-#     name='Bus',
-# ))
-# fig.update_layout(
-#     title=dict(
-#         text='Number of Riders'
-#     ),
-#     barmode='stack',
-#     legend=dict(
-#         x=0.95,
-#         y=0.95,
-#         bgcolor='rgba(0,0,0,0)'
-#     )
-# )
-# fig.write_html('./chart_htmls/wmata_ridership.html')
+fig = go.Figure(layout=layout)
+fig.add_trace(go.Bar(
+    x=data['Date'],
+    y=data['Rail Ridership'],
+    name='Rail',
+))
+fig.add_trace(go.Bar(
+    x=data['Date'],
+    y=data['Bus Ridership'],
+    name='Bus',
+))
+fig.update_layout(
+    title=dict(
+        text='Number of Riders'
+    ),
+    barmode='stack',
+    legend=dict(
+        x=0.95,
+        y=0.95,
+        bgcolor='rgba(0,0,0,0)'
+    )
+)
+fig.write_html('./chart_htmls/wmata_ridership.html')
 
 
 snf_cases['Date'] = pd.to_datetime(snf_cases['Date'])
