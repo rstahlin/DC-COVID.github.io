@@ -84,7 +84,7 @@ def load_data():
 # Load data into the dataframe.
 data, hood_demos, ward_demos, hood_map, snf_cases, snf_keys, al_cases, al_keys, school_info, school_cases, vax  = load_data()
 # Define positive tests in DC
-dc_pos = data['Positives'].diff().rolling(7).sum().divide(data['Tested'].diff().rolling(7).sum())
+dc_pos = data['Positives'].dropna().diff().rolling('7d').sum().divide(data['Tested'].dropna().diff().rolling('7d',min_periods=5).sum())
 # dc_pos = data.[:,'Ward 1':'Unknown Ward'].diff().rolling('7D').sum().divide(data.loc[:,'Ward 1 Tests':'Unknown Ward Tests'].diff().rolling('7D').sum())
 
 data['Date'] = pd.to_datetime(data['Date'])
@@ -97,15 +97,15 @@ bar_display = data.loc[data['Averaged'] != True,['Date','Positives','Deaths','Te
 # Cases
 fig = go.Figure(layout=layout)
 fig.add_trace(go.Bar(
-    x=bar_display['Date'],
-    y=bar_display['Positives'].diff(),
+    x=bar_display['Positives'].dropna().index,
+    y=bar_display['Positives'].dropna().diff(),
     name='New Cases',
     marker_color='rgb(158,202,225)'
 ))
 
 fig.add_trace(go.Scatter(
-    x=data['Date'],
-    y=data['Positives'].diff().rolling(7).mean(),
+    x=data['Positives'].dropna().index,
+    y=data['Positives'].dropna().diff().rolling('7d').sum()/7,
     name='7-Day Average',
     mode='lines',
     line=dict(
@@ -164,14 +164,14 @@ fig.write_html("./chart_htmls/cases.html")
 # Deaths
 fig = go.Figure(layout=layout)
 fig.add_trace(go.Bar(
-    x=bar_display['Date'],
-    y=bar_display['Deaths'].diff(),
+    x=bar_display['Deaths'].dropna().diff().index,
+    y=bar_display['Deaths'].dropna().diff(),
     name='New Deaths',
     marker_color='maroon'
 ))
 fig.add_trace(go.Scatter(
-    x=data['Date'],
-    y=data['Deaths'].diff().rolling(7).mean(),
+    x=data['Deaths'].dropna().index,
+    y=data['Deaths'].dropna().diff().rolling('7d').sum()/7,
     name='7-Day Average',
     mode='lines',
     line=dict(
@@ -205,15 +205,15 @@ fig.write_html("./chart_htmls/deaths.html")
 # Tests
 fig = go.Figure(layout=layout)
 fig.add_trace(go.Bar(
-    x=bar_display['Date'],
-    y=bar_display['Tested'].diff(),
+    x=bar_display['Tested'].dropna().diff().index,
+    y=bar_display['Tested'].dropna().diff(),
     name='New Tests',
     marker_color='orange'
     )
 )
 fig.add_trace(go.Scatter(
-    x=data['Date'],
-    y=data['Tested'].diff().rolling(7).mean(),
+    x=data['Tested'].dropna().index,
+    y=data['Tested'].dropna().diff().rolling('7d').sum()/7,
     name='7-Day Average',
     mode='lines',
     line=dict(
@@ -245,19 +245,19 @@ fig.write_html("./chart_htmls/tests.html")
 
 fig = go.Figure(layout=layout)
 fig.add_trace(go.Scatter(
-    x = data.index,
-    y = data['Positives'].diff().divide(data['Tested'].diff()),
+    x = data['Positives'].dropna().index,
+    y = data['Positives'].dropna().diff().divide(data['Tested'].dropna().diff()),
     mode='markers',
     marker=dict(
         color = 'orange'
     ),
     name = 'Single-Day',
-    hovertemplate='New Tests: '+ data['Tested'].diff().map('{:,.0f}'.format)+
-                  '<br>New Cases: '+ data['Positives'].diff().map('{:.0f}'.format)+
+    hovertemplate='New Tests: '+ data['Tested'].dropna().diff().map('{:,.0f}'.format)+
+                  '<br>New Cases: '+ data['Positives'].dropna().diff().map('{:.0f}'.format)+
                   '<br>%{y:.1%} Positive'
 ))
 fig.add_trace(go.Scatter(
-    x = data.index,
+    x = dc_pos.index,
     y = dc_pos,
     mode='lines',
     line=dict(
@@ -289,10 +289,10 @@ fig.write_html("./chart_htmls/positivity.html")
 ########### Demographic Statistics ################
 # Ages
 fig = go.Figure(layout=layout)
-ages_data = data.loc[:,'age0-18':'age81'].diff().rolling(7).mean()
+ages_data = data.loc[:,'age0-18':'age81'].dropna().diff().rolling('7d').sum()/7
 for i in range(len(AGES_LIST)):
     fig.add_trace(go.Scatter(
-        x=data['Date'],
+        x=ages_data.index,
         y=ages_data.iloc[:,i],
         name=AGES_LIST[i],
         mode='lines',
@@ -321,7 +321,7 @@ age_daily_s_pct = age_daily_s.divide(age_daily_s.sum(axis=1),axis=0)
 fig = go.Figure(layout=layout)
 for i in range(8):
     fig.add_trace(go.Scatter(
-        x=data['Date'],
+        x=age_daily_s_pct.index,
         y=age_daily_s_pct.iloc[:,i],
         mode='lines',
         stackgroup='one',
@@ -397,7 +397,7 @@ fig.write_html("./chart_htmls/ages_deaths_pie.html")
 age_demos = pd.read_csv('age_demos.csv',index_col=0)
 age_demos = age_demos.loc[['0-4 Cases','5-14 Cases','15-19 Cases','20-24 Cases','25-44 Cases','45-64 Cases','65+ Cases'],:]
 # age_data = data.loc[:,'0-4 Cases':'75+ Cases'].dropna().diff().rolling('7d').sum()/7
-age_data = data.loc[:,'0-4 Cases':'75+ Cases'].diff().rolling(7).mean()
+age_data = data.loc[:,'0-4 Cases':'75+ Cases'].dropna().diff().rolling('7d',min_periods=5).sum()/7
 age_data['25-44 Cases'] = age_data['25-34 Cases']+age_data['35-44 Cases']
 age_data['45-64 Cases'] = age_data['45-54 Cases']+age_data['55-64 Cases']
 age_data['65+ Cases'] = age_data['65-74 Cases']+age_data['75+ Cases']
@@ -457,8 +457,8 @@ for i in range(len(age_data.columns)):
     ))
 
 fig.add_trace(go.Scatter(
-    x=data['Date'],
-    y=data['Positives'].diff().rolling(7).mean().divide(ward_demos.loc['All Wards','Population (2019 ACS)'])*10000,
+    x=data['Positives'].dropna().index,
+    y=data['Positives'].dropna().diff().rolling(7).sum().divide(ward_demos.loc['All Wards','Population (2019 ACS)'])*10000/7,
     mode='lines',
     line=dict(
         color='black',
@@ -566,10 +566,10 @@ fig.write_html("./chart_htmls/race_breakdown.html")
 ########### Wards #####################
 # Ward Cases
 fig = go.Figure(layout=layout)
-ward_avg = data.loc[:,'Ward 1':'Ward 8'].diff().rolling(7).mean()
+ward_avg = data.loc[:,'Ward 1':'Ward 8'].dropna().diff().rolling('7d').sum()/7
 for i in range(8):
     fig.add_trace(go.Scatter(
-        x=data['Date'],
+        x=ward_avg.index,
         y=ward_avg[WARD_LIST[i]],
         name=WARD_LIST[i],
         line=dict(
@@ -591,12 +591,12 @@ fig.update_layout(
 fig.write_html("./chart_htmls/wards.html")
 
 #Ward Breakdown
-ward_daily_s = data.loc[:,WARD_LIST].diff().rolling(7).sum()
+ward_daily_s = data.loc[:,WARD_LIST].dropna().diff().rolling('7d').sum()
 ward_daily_s_pct = ward_daily_s.divide(ward_daily_s.sum(axis=1),axis=0)
 fig = go.Figure(layout=layout)
 for i in range(8):
     fig.add_trace(go.Scatter(
-        x=data['Date'],
+        x=ward_daily_s_pct.index,
         y=ward_daily_s_pct.iloc[:,i],
         mode='lines',
         stackgroup='one',
@@ -623,10 +623,10 @@ fig.write_html("./chart_htmls/wards_breakdown.html")
 # Per Capita Ward Cases
 fig = go.Figure(layout=layout)
 ward_avg_pc = np.divide(ward_avg,ward_demos.loc[WARD_LIST,'Population (2019 ACS)'])*10000
-dc_avg_pc = np.divide(data['Positives'].diff().rolling(7).mean(), ward_demos.loc['All Wards','Population (2019 ACS)'])*10000
+dc_avg_pc = np.divide(data['Positives'].dropna().diff().rolling(7).sum()/7, ward_demos.loc['All Wards','Population (2019 ACS)'])*10000
 for i in range(8):
     fig.add_trace(go.Scatter(
-        x=data['Date'],
+        x=ward_avg_pc.index,
         y=ward_avg_pc[WARD_LIST[i]],
         name=WARD_LIST[i],
         mode='lines',
@@ -635,7 +635,7 @@ for i in range(8):
         )
     ))
 fig.add_trace(go.Scatter(
-    x=data['Date'],
+    x=dc_avg_pc.index,
     y=dc_avg_pc,
     name='District-Wide',
     mode='lines',
@@ -659,11 +659,15 @@ fig.write_html("./chart_htmls/wards_pc.html")
 
 # Ward Positivity
 fig = go.Figure(layout=layout)
-positivity = np.divide(data.loc['2020-06-01':,'Ward 1':'Ward 8'].diff().rolling(7).sum(),data.loc['2020-06-01':,'Ward 1 Tests':'Ward 8 Tests'].diff().rolling(7).sum())
+ward_cases = data.loc[:,'Ward 1':'Ward 8'].dropna().diff().rolling('7d',min_periods=5).sum()/7
+ward_tests = data.loc[:,'Ward 1 Tests':'Ward 8 Tests'].dropna().diff().rolling('7d',min_periods=5).sum()/7
+ward_tests.columns = ward_cases.columns
+ward_pos = ward_cases.divide(ward_tests)
+print(ward_pos)
 for i in range(8):
     fig.add_trace(go.Scatter(
-        x=data.loc['2020-06-01':,'Date'],
-        y=positivity.iloc[:,i],
+        x=ward_pos.index,
+        y=ward_pos.iloc[:,i],
         name=WARD_LIST[i],
         mode='lines',
         line=dict(
@@ -671,7 +675,7 @@ for i in range(8):
         )
     ))
 fig.add_trace(go.Scatter(
-    x=data['Date'],
+    x=dc_pos.index,
     y=dc_pos,
     name='District-Wide',
     mode='lines',
@@ -684,7 +688,8 @@ fig.update_layout(
         text='Positivity by Ward, 7-Day Window'
     ),
     yaxis=dict(
-        tickformat=".1%"
+        tickformat=".1%",
+        range=[0,.35]
     ),
     legend=dict(
         y=0.75,
@@ -730,19 +735,19 @@ fig.update_layout(
 
 # Ward Test Rates
 fig = go.Figure(layout=layout)
-ward_test_pc = np.divide(data.loc['2020-06-01':,'Ward 1 Tests':'Ward 8 Tests'].diff().rolling(7).mean(),ward_demos.loc[WARD_LIST,'Population (2019 ACS)'])*10000
+ward_test_pc = ward_tests.divide(ward_demos.loc[WARD_LIST,'Population (2019 ACS)'])*10000
 for i in range(8):
     fig.add_trace(go.Scatter(
-        x=data.loc['2020-06-01':,'Date'],
+        x=ward_test_pc.index,
         y=ward_test_pc.iloc[:,i],name=WARD_LIST[i],
         mode='lines',
         line=dict(
             color=PASTELS[i]
         )
     ))
-dc_tests = np.divide(data['Tested'].diff().rolling(7).mean(), ward_demos.loc['All Wards','Population (2019 ACS)'])*10000
+dc_tests = np.divide(data['Tested'].dropna().diff().rolling('7d').sum()/7, ward_demos.loc['All Wards','Population (2019 ACS)'])*10000
 fig.add_trace(go.Scatter(
-    x=data['Date'],
+    x=dc_tests.index,
     y=dc_tests,
     name='District-Wide',
     mode='lines',
@@ -766,12 +771,12 @@ fig.write_html("./chart_htmls/wards_tests.html")
 
 
 #Ward Breakdown
-ward_daily_s_tests = data.loc['2020-06-01':,'Ward 1 Tests':'Ward 8 Tests'].diff().rolling(7).sum()
+ward_daily_s_tests = ward_tests*7
 ward_daily_s_tests_pct = ward_daily_s_tests.divide(ward_daily_s_tests.sum(axis=1),axis=0)
 fig = go.Figure(layout=layout)
 for i in range(8):
     fig.add_trace(go.Scatter(
-        x=data.loc['2020-06-01':,'Date'],
+        x=ward_daily_s_tests_pct.index,
         y=ward_daily_s_tests_pct.iloc[:,i],
         mode='lines',
         stackgroup='one',
@@ -962,12 +967,12 @@ fig.update_layout(
 fig.write_html("./chart_htmls/patients_ventilator.html")
 
 ############# MAPS #################
-hood_data = data.loc[:,'16th St Heights':'Capitol Hill'].diff().rolling(7).mean()
+hood_data = data.loc[:,'16th St Heights':'Capitol Hill'].dropna().diff().rolling('7d').sum()/7
 hood_data_pc = hood_data.divide(hood_demos['Population (2019 ACS)'])*10000
-rolling_cases = data.loc[:,'16th St Heights':'Capitol Hill'].diff().rolling(7).sum()
-rolling_tests = data.loc[:,'16th St Heights Tests':'Capitol Hill Tests'].diff().rolling(7).sum()
+rolling_cases = data.loc[:,'16th St Heights':'Capitol Hill'].dropna().diff().rolling(7).sum()
+rolling_tests = data.loc[:,'16th St Heights Tests':'Capitol Hill Tests'].dropna().diff().rolling(7).sum()
 rolling_tests.columns = rolling_cases.columns
-hood_positive = np.divide(rolling_cases,rolling_tests)
+hood_positive = rolling_cases.divide(rolling_tests)
 pos_this_week = hood_positive.iloc[-1,:].sort_values()
 pos_this_week = pd.concat([pos_this_week,rolling_cases.iloc[-1,:],rolling_tests.iloc[-1,:],hood_demos['Population (2019 ACS)'],hood_demos['OBJECTID']],axis=1)
 pos_this_week.columns = ['Positivity This Week','Positives This Week','Tests This Week','Population','OBJECTID']
@@ -1089,7 +1094,7 @@ for i in range(51):
     if HOOD_LIST_SORTED[i] in NON_RESIDENTIAL_HOODS:
         continue
     fig.add_trace(go.Scatter(
-        x=data['Date'],
+        x=hood_data.index,
         y=hood_data[HOOD_LIST_SORTED[i]],
         mode='lines',
         line=dict(
@@ -1101,7 +1106,7 @@ for i in range(51):
     ))
 for i in range(51):
     fig.add_trace(go.Scatter(
-        x=data['Date'],
+        x=hood_data.index,
         y=hood_data[HOOD_LIST_SORTED[i]],
         name=HOOD_LIST_SORTED[i],
         mode='lines',
@@ -1137,7 +1142,7 @@ for i in range(51):
     if HOOD_LIST_SORTED[i] in NON_RESIDENTIAL_HOODS:
         continue
     fig.add_trace(go.Scatter(
-        x=data['Date'],
+        x=hood_data.index,
         y=hood_data_pc[HOOD_LIST_SORTED[i]].drop(columns=['National Mall','DC Medical Center']),
         mode='lines',
         line=dict(
@@ -1148,7 +1153,7 @@ for i in range(51):
         showlegend=False
     ))
 fig.add_trace(go.Scatter(
-    x=data['Date'],
+    x=dc_avg_pc.index,
     y=dc_avg_pc,
     name='District-Wide',
     mode='lines',
@@ -1159,7 +1164,7 @@ fig.add_trace(go.Scatter(
 ))
 for i in range(51):
     fig.add_trace(go.Scatter(
-        x=data['Date'],
+        x=hood_data_pc.index,
         y=hood_data_pc[HOOD_LIST_SORTED[i]],
         mode='lines',
         name=HOOD_LIST_SORTED[i],
@@ -1193,7 +1198,7 @@ fig.update_layout(
 fig.write_html('chart_htmls/nhood_pc.html')
 
 # Neighborhoods Tests Per capita
-ntests = data.loc[:,'16th St Heights Tests':'Capitol Hill Tests'].diff().rolling(7).mean()
+ntests = data.loc[:,'16th St Heights Tests':'Capitol Hill Tests'].dropna().diff().rolling('7d').sum()/7
 ntests.columns = HOOD_LIST
 ntests_pc = ntests.divide(hood_demos['Population (2019 ACS)'])*10000
 fig = go.Figure(layout=layout)
@@ -1201,7 +1206,7 @@ for i in range(51):
     if HOOD_LIST_SORTED[i] in NON_RESIDENTIAL_HOODS:
         continue
     fig.add_trace(go.Scatter(
-        x=data['Date'],
+        x=ntests_pc.index,
         y=ntests_pc[HOOD_LIST_SORTED[i]].drop(columns=['National Mall','DC Medical Center']),
         line=dict(
             color='lightgrey',
@@ -1212,7 +1217,7 @@ for i in range(51):
         showlegend=False
     ))
 fig.add_trace(go.Scatter(
-    x=data['Date'],
+    x=dc_tests.index,
     y=dc_tests,
     name='District-Wide',
     mode='lines',
@@ -1223,7 +1228,7 @@ fig.add_trace(go.Scatter(
 ))
 for i in range(51):
     fig.add_trace(go.Scatter(
-        x=data['Date'],
+        x=ntests_pc.index,
         y=ntests_pc[HOOD_LIST_SORTED[i]],
         name=HOOD_LIST_SORTED[i],
         mode='lines',
@@ -1261,7 +1266,7 @@ for i in range(51):
     if HOOD_LIST_SORTED[i] in NON_RESIDENTIAL_HOODS:
         continue
     fig.add_trace(go.Scatter(
-        x=data['Date'],
+        x=ntests.index,
         y=ntests[HOOD_LIST_SORTED[i]],
         mode='lines',
         line=dict(
@@ -1273,7 +1278,7 @@ for i in range(51):
     ))
 for i in range(51):
     fig.add_trace(go.Scatter(
-        x=data['Date'],
+        x=ntests.index,
         y=ntests[HOOD_LIST_SORTED[i]],
         name=HOOD_LIST_SORTED[i],
         visible='legendonly',
@@ -1304,12 +1309,12 @@ fig.write_html('chart_htmls/nhood_tests.html')
 
 # Neighborhood Test positivity
 fig = go.Figure(layout=layout)
-hood_positive = np.divide(rolling_cases,rolling_tests)
+hood_positive = rolling_cases.divide(rolling_tests)
 for i in range(51):
     if HOOD_LIST_SORTED[i] in NON_RESIDENTIAL_HOODS:
         continue
     fig.add_trace(go.Scatter(
-        x=data['Date'],
+        x=hood_positive.index,
         y=hood_positive[HOOD_LIST_SORTED[i]],
         line=dict(
             color='lightgrey',
@@ -1320,7 +1325,7 @@ for i in range(51):
         showlegend=False
     ))
 fig.add_trace(go.Scatter(
-    x=data['Date'],
+    x=dc_pos.index,
     y=dc_pos,
     mode='lines',
     name="District-Wide",
@@ -1331,7 +1336,7 @@ fig.add_trace(go.Scatter(
 ))
 for i in range(51):
     fig.add_trace(go.Scatter(
-        x=data['Date'],
+        x=hood_positive.index,
         y=hood_positive[HOOD_LIST_SORTED[i]],
         mode='lines',
         name=HOOD_LIST_SORTED[i],
