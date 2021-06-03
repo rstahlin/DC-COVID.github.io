@@ -339,7 +339,7 @@ $( document ).ready(function() {
 
     // display deaths by age graph on tab click
     $('#age-data-death-tab').click(function(){
-        $('#display-iframe').attr('src', './chart_htmls/ages_deaths_pie.html');
+        $('#display-iframe').attr('src', './chart_htmls/age_deaths.html');
 
         // set graph note
         var graph_note = '';
@@ -444,6 +444,14 @@ $( document ).ready(function() {
 
         // set graph note
         var graph_note = '<p style="text-align:center"> <em> Note: District-Wide tests are based on the "Total Overall Number of Tests" variable released by D.C., and is different than the testing data referenced in D.C.\'s ReOpening Metrics. </em> </p>'
+        $('#graph-note').html(graph_note);
+    });
+    // display graph on tab click
+    $('#ward-data-deaths-tab').click(function(){
+        $('#display-iframe').attr('src', './chart_htmls/wards_deaths.html');
+
+        // set graph note
+        var graph_note = ''
         $('#graph-note').html(graph_note);
     });
         // display graph on tab click
@@ -564,7 +572,7 @@ $( document ).ready(function() {
         // display iframe
         $('#display-iframe').show();
         // set iframe
-        $('#display-iframe').attr('src', './chart_htmls/races_cases_pie.html');
+        $('#display-iframe').attr('src', './chart_htmls/races_deaths.html');
         $('#display-iframe').attr('height', '575');
 
         // set tab note
@@ -587,6 +595,14 @@ $( document ).ready(function() {
 
     // display graph on tab click
     $('#race-and-ethnicity-data-deaths-tab').click(function(){
+        $('#display-iframe').attr('src', './chart_htmls/races_deaths.html');
+
+        // set graph note
+        var graph_note = '';
+        $('#graph-note').html(graph_note);
+    });
+
+    $('#race-and-ethnicity-data-deaths-pie-tab').click(function(){
         $('#display-iframe').attr('src', './chart_htmls/races_deaths_pie.html');
 
         // set graph note

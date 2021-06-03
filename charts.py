@@ -485,6 +485,31 @@ fig.update_layout(
 )
 fig.write_html("./chart_htmls/ages_census_pc.html")
 
+deaths_age = data.loc[:,'0-19':'80+'].dropna().diff().replace(0,np.nan)
+fig = go.Figure(layout=layout)
+for age_group in deaths_age.columns:
+    fig.add_trace(go.Bar(
+        x = deaths_age.index,
+        y = deaths_age[age_group],
+        name=age_group,
+
+    ))
+fig.update_layout(
+    barmode='stack',
+    title=dict(
+        text='Daily Deaths by Age Group'
+    ),
+    legend=dict(
+        x=1,
+        y=0.5,
+        yanchor='middle'
+    ),
+    yaxis=dict(
+        rangemode='nonnegative'
+    )
+)
+fig.write_html('./chart_htmls/age_deaths.html')
+
 
 # Race of Cases
 fig = go.Figure(
@@ -531,6 +556,36 @@ fig.update_layout(
     )
 )
 fig.write_html("./chart_htmls/races_deaths_pie.html")
+
+deaths_race = data.loc[:,'Asian Deaths':'Other Deaths'].dropna().diff().replace(0,np.nan)
+fig = go.Figure(layout=layout)
+i=0
+for race in deaths_race.columns:
+    fig.add_trace(go.Bar(
+        x = deaths_race.index,
+        y = deaths_race[race],
+        name=race,
+        marker_color=ANTIQUE_ALT[i]
+    ))
+    i+=1
+fig.update_layout(
+    barmode='stack',
+    title=dict(
+        text='Daily Deaths in D.C. by Race/Ethnicity'
+    ),
+    legend=dict(
+        x=0.5,
+        y=-.1,
+        yanchor='top',
+        xanchor='center',
+        orientation='h',
+        bgcolor='rgba(0,0,0,0)'
+    ),
+    yaxis=dict(
+        rangemode='nonnegative'
+    )
+)
+fig.write_html('./chart_htmls/races_deaths.html')
 
 # Race Breakdown
 
@@ -698,40 +753,37 @@ fig.update_layout(
 fig.write_html("./chart_htmls/wards_positivity.html")
 
 # Ward Deaths
-fig = go.Figure(
-    data=[go.Bar(
-        x=WARD_LIST,
-        y=data.iloc[-1,58:66],
-        name='Deaths',
-        marker_color=PASTELS[0:8] # marker color can be a single color value or an iterable
-    )],
-    layout = layout
-)
+deaths_ward = data.loc[:,'Ward 1 Deaths':'Ward 8 Deaths'].dropna().diff().replace(0,np.nan)
+fig = go.Figure(layout=layout)
+i=0
+for ward in deaths_ward.columns:
+    fig.add_trace(go.Bar(
+        x = deaths_ward.index,
+        y = deaths_ward[ward],
+        name=WARD_LIST[i],
+        marker_color=PASTELS[i]
+    ))
+    i+=1
 fig.update_layout(
+    barmode='stack',
     title=dict(
-        text='Total Deaths'
-    )
-)
-
-# Ward Deaths Per Capita
-ward_deaths = data.iloc[-1,58:66]
-ward_deaths.index = WARD_LIST
-fig = go.Figure(
-    data=[go.Bar(
-        x=WARD_LIST,
-        y=ward_deaths.divide(ward_demos.loc[WARD_LIST,'Population (2019 ACS)'])*10000,
-        name='Deaths',
-        marker_color=PASTELS[0:8] # marker color can be a single color value or an iterable
-    )],
-    layout = layout)
-fig.update_layout(
-    title=dict(
-        text='Deaths per 10,000 Residents'
+        text='Daily Deaths in D.C. by Ward'
+    ),
+    legend=dict(
+        x=0.5,
+        y=-.1,
+        yanchor='top',
+        xanchor='center',
+        orientation='h',
+        bgcolor='rgba(0,0,0,0)'
     ),
     yaxis=dict(
-        tickformat=".1f"
+        rangemode='nonnegative'
     )
 )
+fig.write_html('./chart_htmls/wards_deaths.html')
+
+
 
 # Ward Test Rates
 fig = go.Figure(layout=layout)
@@ -3013,113 +3065,113 @@ fig.update_layout(
 fig.write_html('./chart_htmls/ward_vax.html')
 
 
-to_plot = hood_vax_pc.drop(columns=['National Mall','DC Medical Center','Stadium Armory']).diff()
+# to_plot = hood_vax_pc.drop(columns=['National Mall','DC Medical Center','Stadium Armory']).diff()
 
-nrows = 11
-ncols = 11
+# nrows = 11
+# ncols = 11
 
-# vmin, vmax = to_plot.iloc[-1,:].min(), to_plot.iloc[-1,:].max()
-
-
-norm = matplotlib.colors.Normalize(vmin=0, vmax=50)
-cmap = matplotlib.cm.get_cmap('Greens') # yellow to orange to red
-
-fig = make_subplots(
-    rows=nrows,
-    cols=ncols,
-    shared_xaxes=True,
-    shared_yaxes=True,
-    vertical_spacing=0.005,
-    horizontal_spacing=0.005
-)
-ymax = np.max(np.max(to_plot))*1.1
+# # vmin, vmax = to_plot.iloc[-1,:].min(), to_plot.iloc[-1,:].max()
 
 
-for nhood in hood_data_pc.columns:
-    color = 'rgba' + str(cmap(norm(np.round(hood_vax_pc[nhood][-1]*100),4)))[:]
-    if nhood not in ['National Mall','Naval Station & Air Force']:
-        fig.add_trace(
-            go.Bar(
-                x=hood_vax_pc.index,
-                y=hood_vax_pc[nhood].diff(),
-                marker_color='green',
-                name=nhood,
-                hovertemplate="%{y:.1%}",
-#                 marker=dict(
-#                     size = 4
-#                 )
+# norm = matplotlib.colors.Normalize(vmin=0, vmax=50)
+# cmap = matplotlib.cm.get_cmap('Greens') # yellow to orange to red
 
-            ),
-            row=diamond_dict[nhood][0],
-            col=diamond_dict[nhood][1],
-        )
-    else:
-        fig.add_trace(
-            go.Bar(
-                x=hood_vax_pc.index,
-                y=hood_vax_pc[nhood].diff(),
-                marker_color='grey',
-                name=nhood,
-                hovertemplate="%{y:.1%} (May be anomalous)",
-#                 marker=dict(
-#                     size = 4
-#                 )
-            ),
-            row=diamond_dict[nhood][0],
-            col=diamond_dict[nhood][1]
-        )
-#     fig.add_trace(
-#         go.Scatter(
-#             x=['2021-02-10',np.datetime64('today')],
-#             y= [ymax*1.5,ymax*1.5],
-#             fill='tozeroy',
-#             fillcolor=color,
-#             hoverinfo='skip',
-#         ),
-#         row=diamond_dict[nhood][0],
-#         col=diamond_dict[nhood][1],
-#     )
+# fig = make_subplots(
+#     rows=nrows,
+#     cols=ncols,
+#     shared_xaxes=True,
+#     shared_yaxes=True,
+#     vertical_spacing=0.005,
+#     horizontal_spacing=0.005
+# )
+# ymax = np.max(np.max(to_plot))*1.1
 
 
-fig.update_layout(
-    # plot_bgcolor='rgb(247, 246, 218)',
-    # plot_bgcolor='rgba(0,0,0,0)',
-    plot_bgcolor='white',
-    hovermode='x',
-    font=dict(
-        family='Arial'
-    ),
-    title = dict(
-        x=0.5,
-        text='Weekly Full Vaccinations<br>per Capita Reported by Neighborhood'
-    ),
-    showlegend=False,
-    width=750,
-    height=750
-)
-fig.update_xaxes(
-    range=[to_plot.index[0]-np.timedelta64(2, 'D'),to_plot.index[-1]+np.timedelta64(2, 'D')],
-    showspikes=False,
-    showticklabels = False,
-    spikedash = 'solid',
-    spikecolor = 'black',
-    spikemode  = 'across',
-    spikesnap = 'cursor',
-    fixedrange = True
-)
+# for nhood in hood_data_pc.columns:
+#     color = 'rgba' + str(cmap(norm(np.round(hood_vax_pc[nhood][-1]*100),4)))[:]
+#     if nhood not in ['National Mall','Naval Station & Air Force']:
+#         fig.add_trace(
+#             go.Bar(
+#                 x=hood_vax_pc.index,
+#                 y=hood_vax_pc[nhood].diff(),
+#                 marker_color='green',
+#                 name=nhood,
+#                 hovertemplate="%{y:.1%}",
+# #                 marker=dict(
+# #                     size = 4
+# #                 )
 
-fig.update_yaxes(
-    rangemode = 'tozero',
-    showticklabels = False,
-    showgrid=False,
-    range=[0,ymax],
-    tickformat=".1%",
-    fixedrange = True
-)
-fig.update_layout(
-    paper_bgcolor='rgba(0,0,0,0)'
-)
-fig.write_html('./chart_htmls/nhood_matrix_vax_pc_weekly.html')
+#             ),
+#             row=diamond_dict[nhood][0],
+#             col=diamond_dict[nhood][1],
+#         )
+#     else:
+#         fig.add_trace(
+#             go.Bar(
+#                 x=hood_vax_pc.index,
+#                 y=hood_vax_pc[nhood].diff(),
+#                 marker_color='grey',
+#                 name=nhood,
+#                 hovertemplate="%{y:.1%} (May be anomalous)",
+# #                 marker=dict(
+# #                     size = 4
+# #                 )
+#             ),
+#             row=diamond_dict[nhood][0],
+#             col=diamond_dict[nhood][1]
+#         )
+# #     fig.add_trace(
+# #         go.Scatter(
+# #             x=['2021-02-10',np.datetime64('today')],
+# #             y= [ymax*1.5,ymax*1.5],
+# #             fill='tozeroy',
+# #             fillcolor=color,
+# #             hoverinfo='skip',
+# #         ),
+# #         row=diamond_dict[nhood][0],
+# #         col=diamond_dict[nhood][1],
+# #     )
+
+
+# fig.update_layout(
+#     # plot_bgcolor='rgb(247, 246, 218)',
+#     # plot_bgcolor='rgba(0,0,0,0)',
+#     plot_bgcolor='white',
+#     hovermode='x',
+#     font=dict(
+#         family='Arial'
+#     ),
+#     title = dict(
+#         x=0.5,
+#         text='Weekly Full Vaccinations<br>per Capita Reported by Neighborhood'
+#     ),
+#     showlegend=False,
+#     width=750,
+#     height=750
+# )
+# fig.update_xaxes(
+#     range=[to_plot.index[0]-np.timedelta64(2, 'D'),to_plot.index[-1]+np.timedelta64(2, 'D')],
+#     showspikes=False,
+#     showticklabels = False,
+#     spikedash = 'solid',
+#     spikecolor = 'black',
+#     spikemode  = 'across',
+#     spikesnap = 'cursor',
+#     fixedrange = True
+# )
+
+# fig.update_yaxes(
+#     rangemode = 'tozero',
+#     showticklabels = False,
+#     showgrid=False,
+#     range=[0,ymax],
+#     tickformat=".1%",
+#     fixedrange = True
+# )
+# fig.update_layout(
+#     paper_bgcolor='rgba(0,0,0,0)'
+# )
+# fig.write_html('./chart_htmls/nhood_matrix_vax_pc_weekly.html')
 
 age_demos = pd.read_csv('age_demos.csv',index_col=2)
 vax_age_demos = age_demos.loc[['16-19','20-44','45-64','65+'],'Population (2019 ACS)']
