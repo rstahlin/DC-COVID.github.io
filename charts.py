@@ -459,7 +459,7 @@ for i in range(len(age_data.columns)):
 
 fig.add_trace(go.Scatter(
     x=data['Positives'].dropna().index,
-    y=data['Positives'].dropna().diff().rolling(7).sum().divide(ward_demos.loc['All Wards','Population (2019 ACS)'])*10000/7,
+    y=data['Positives'].dropna().diff().rolling('7d').sum().divide(ward_demos.loc['All Wards','Population (2019 ACS)'])*10000/7,
     mode='lines',
     line=dict(
         color='black',
@@ -591,7 +591,7 @@ fig.write_html('./chart_htmls/races_deaths.html')
 # Race Breakdown
 
 # race_cum_pct = data.loc['2020-04-05':,RACE_LIST].divide(data.loc['2020-04-05':,'Positives'],axis=0)
-race_daily_s =  data.loc['2020-04-05':,'White':'Two or More Races'].diff().rolling(7).sum()
+race_daily_s =  data.loc['2020-04-05':,'White':'Two or More Races'].diff().rolling('7d').sum()
 race_daily_s_pct = race_daily_s.divide(race_daily_s.sum(axis=1),axis=0)
 fig = go.Figure(layout=layout)
 for i in range(6):
@@ -679,7 +679,7 @@ fig.write_html("./chart_htmls/wards_breakdown.html")
 # Per Capita Ward Cases
 fig = go.Figure(layout=layout)
 ward_avg_pc = np.divide(ward_avg,ward_demos.loc[WARD_LIST,'Population (2019 ACS)'])*10000
-dc_avg_pc = np.divide(data['Positives'].dropna().diff().rolling(7).sum()/7, ward_demos.loc['All Wards','Population (2019 ACS)'])*10000
+dc_avg_pc = np.divide(data['Positives'].dropna().diff().rolling('7d').sum()/7, ward_demos.loc['All Wards','Population (2019 ACS)'])*10000
 for i in range(8):
     fig.add_trace(go.Scatter(
         x=ward_avg_pc.index,
@@ -1022,8 +1022,8 @@ fig.write_html("./chart_htmls/patients_ventilator.html")
 ############# MAPS #################
 hood_data = data.loc[:,'16th St Heights':'Capitol Hill'].dropna().diff().rolling('7d').sum()/7
 hood_data_pc = hood_data.divide(hood_demos['Population (2019 ACS)'])*10000
-rolling_cases = data.loc[:,'16th St Heights':'Capitol Hill'].dropna().diff().rolling(7).sum()
-rolling_tests = data.loc[:,'16th St Heights Tests':'Capitol Hill Tests'].dropna().diff().rolling(7).sum()
+rolling_cases = data.loc[:,'16th St Heights':'Capitol Hill'].dropna().diff().rolling('7d').sum()
+rolling_tests = data.loc[:,'16th St Heights Tests':'Capitol Hill Tests'].dropna().diff().rolling('7d').sum()
 rolling_tests.columns = rolling_cases.columns
 hood_positive = rolling_cases.divide(rolling_tests)
 pos_this_week = hood_positive.iloc[-1,:].sort_values()
