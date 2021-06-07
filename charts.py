@@ -94,6 +94,7 @@ vax.index = vax['Date']
 
 bar_display = data.loc[data['Averaged'] != True,['Date','Positives','Deaths','Tested']]
 
+print(data['Positives'].dropna().diff().rolling('7d').sum())
 # Cases
 fig = go.Figure(layout=layout)
 fig.add_trace(go.Bar(
