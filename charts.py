@@ -622,7 +622,7 @@ fig.write_html("./chart_htmls/race_breakdown.html")
 ########### Wards #####################
 # Ward Cases
 fig = go.Figure(layout=layout)
-ward_avg = data.loc[:,'Ward 1':'Ward 8'].dropna().diff().rolling('7d').sum()/7
+ward_avg = data.loc[:,'Ward 1':'Ward 8'].dropna().diff().rolling('7d',min_periods=6).sum()/7
 for i in range(8):
     fig.add_trace(go.Scatter(
         x=ward_avg.index,
