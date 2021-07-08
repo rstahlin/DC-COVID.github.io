@@ -94,7 +94,7 @@ vax.index = vax['Date']
 
 bar_display = data.loc[data['Averaged'] != True,['Date','Positives','Deaths','Tested']]
 
-print(data['Positives'].dropna().diff().rolling('7d').sum())
+# print(data['Positives'].dropna().diff().rolling('7d').sum())
 # Cases
 fig = go.Figure(layout=layout)
 fig.add_trace(go.Bar(
@@ -105,8 +105,8 @@ fig.add_trace(go.Bar(
 ))
 
 fig.add_trace(go.Scatter(
-    x=data['Positives'].dropna().index,
-    y=data['Positives'].dropna().diff().rolling('7d').sum()/7,
+    x=data['Positives'].index,
+    y=data['Positives'].diff(periods=7)/7,
     name='7-Day Average',
     mode='lines',
     line=dict(
@@ -213,8 +213,8 @@ fig.add_trace(go.Bar(
     )
 )
 fig.add_trace(go.Scatter(
-    x=data['Tested'].dropna().index,
-    y=data['Tested'].dropna().diff().rolling('7d').sum()/7,
+    x=data['Tested'].index,
+    y=data['Tested'].diff(periods=7)/7,
     name='7-Day Average',
     mode='lines',
     line=dict(
@@ -290,7 +290,7 @@ fig.write_html("./chart_htmls/positivity.html")
 ########### Demographic Statistics ################
 # Ages
 fig = go.Figure(layout=layout)
-ages_data = data.loc[:,'age0-18':'age81'].dropna().diff().rolling('7d').sum()/7
+ages_data = data.loc[:,'age0-18':'age81'].diff(periods=7)/7
 for i in range(len(AGES_LIST)):
     fig.add_trace(go.Scatter(
         x=ages_data.index,
@@ -398,7 +398,7 @@ fig.write_html("./chart_htmls/ages_deaths_pie.html")
 age_demos = pd.read_csv('age_demos.csv',index_col=0)
 age_demos = age_demos.loc[['0-4 Cases','5-14 Cases','15-19 Cases','20-24 Cases','25-44 Cases','45-64 Cases','65+ Cases'],:]
 # age_data = data.loc[:,'0-4 Cases':'75+ Cases'].dropna().diff().rolling('7d').sum()/7
-age_data = data.loc[:,'0-4 Cases':'75+ Cases'].dropna().diff().rolling('7d',min_periods=5).sum()/7
+age_data = data.loc[:,'0-4 Cases':'75+ Cases'].diff(periods=7)/7
 age_data['25-44 Cases'] = age_data['25-34 Cases']+age_data['35-44 Cases']
 age_data['45-64 Cases'] = age_data['45-54 Cases']+age_data['55-64 Cases']
 age_data['65+ Cases'] = age_data['65-74 Cases']+age_data['75+ Cases']
@@ -459,7 +459,7 @@ for i in range(len(age_data.columns)):
 
 fig.add_trace(go.Scatter(
     x=data['Positives'].dropna().index,
-    y=data['Positives'].dropna().diff().rolling('7d').sum().divide(ward_demos.loc['All Wards','Population (2019 ACS)'])*10000/7,
+    y=data['Positives'].diff(periods=7).divide(ward_demos.loc['All Wards','Population (2019 ACS)'])*10000/7,
     mode='lines',
     line=dict(
         color='black',
@@ -622,7 +622,7 @@ fig.write_html("./chart_htmls/race_breakdown.html")
 ########### Wards #####################
 # Ward Cases
 fig = go.Figure(layout=layout)
-ward_avg = data.loc[:,'Ward 1':'Ward 8'].dropna().diff().rolling('7d',min_periods=6).sum()/7
+ward_avg = data.loc[:,'Ward 1':'Ward 8'].diff(periods=7)/7
 for i in range(8):
     fig.add_trace(go.Scatter(
         x=ward_avg.index,
@@ -647,7 +647,7 @@ fig.update_layout(
 fig.write_html("./chart_htmls/wards.html")
 
 #Ward Breakdown
-ward_daily_s = data.loc[:,WARD_LIST].dropna().diff().rolling('7d').sum()
+ward_daily_s = data.loc[:,WARD_LIST].diff(periods=7)/7
 ward_daily_s_pct = ward_daily_s.divide(ward_daily_s.sum(axis=1),axis=0)
 fig = go.Figure(layout=layout)
 for i in range(8):
@@ -679,7 +679,7 @@ fig.write_html("./chart_htmls/wards_breakdown.html")
 # Per Capita Ward Cases
 fig = go.Figure(layout=layout)
 ward_avg_pc = np.divide(ward_avg,ward_demos.loc[WARD_LIST,'Population (2019 ACS)'])*10000
-dc_avg_pc = np.divide(data['Positives'].dropna().diff().rolling('7d').sum()/7, ward_demos.loc['All Wards','Population (2019 ACS)'])*10000
+dc_avg_pc = np.divide(data['Positives'].diff(periods=7)/7, ward_demos.loc['All Wards','Population (2019 ACS)'])*10000
 for i in range(8):
     fig.add_trace(go.Scatter(
         x=ward_avg_pc.index,
@@ -715,8 +715,8 @@ fig.write_html("./chart_htmls/wards_pc.html")
 
 # Ward Positivity
 fig = go.Figure(layout=layout)
-ward_cases = data.loc[:,'Ward 1':'Ward 8'].dropna().diff().rolling('7d',min_periods=5).sum()/7
-ward_tests = data.loc[:,'Ward 1 Tests':'Ward 8 Tests'].dropna().diff().rolling('7d',min_periods=5).sum()/7
+ward_cases = data.loc[:,'Ward 1':'Ward 8'].diff(periods=7)/7
+ward_tests = data.loc[:,'Ward 1 Tests':'Ward 8 Tests'].diff(periods=7)/7
 ward_tests.columns = ward_cases.columns
 ward_pos = ward_cases.divide(ward_tests)
 print(ward_pos)
@@ -798,7 +798,7 @@ for i in range(8):
             color=PASTELS[i]
         )
     ))
-dc_tests = np.divide(data['Tested'].dropna().diff().rolling('7d').sum()/7, ward_demos.loc['All Wards','Population (2019 ACS)'])*10000
+dc_tests = np.divide(data['Tested'].diff(periods=7)/7, ward_demos.loc['All Wards','Population (2019 ACS)'])*10000
 fig.add_trace(go.Scatter(
     x=dc_tests.index,
     y=dc_tests,
@@ -1020,10 +1020,10 @@ fig.update_layout(
 fig.write_html("./chart_htmls/patients_ventilator.html")
 
 ############# MAPS #################
-hood_data = data.loc[:,'16th St Heights':'Capitol Hill'].dropna().diff().rolling('7d').sum()/7
+hood_data = data.loc[:,'16th St Heights':'Capitol Hill'].diff(periods=7).dropna()/7
 hood_data_pc = hood_data.divide(hood_demos['Population (2019 ACS)'])*10000
-rolling_cases = data.loc[:,'16th St Heights':'Capitol Hill'].dropna().diff().rolling('7d').sum()
-rolling_tests = data.loc[:,'16th St Heights Tests':'Capitol Hill Tests'].dropna().diff().rolling('7d').sum()
+rolling_cases = data.loc[:,'16th St Heights':'Capitol Hill'].diff(periods=7).dropna()
+rolling_tests = data.loc[:,'16th St Heights Tests':'Capitol Hill Tests'].diff(periods=7).dropna()
 rolling_tests.columns = rolling_cases.columns
 hood_positive = rolling_cases.divide(rolling_tests)
 pos_this_week = hood_positive.iloc[-1,:].sort_values()
@@ -1195,7 +1195,7 @@ for i in range(51):
     if HOOD_LIST_SORTED[i] in NON_RESIDENTIAL_HOODS:
         continue
     fig.add_trace(go.Scatter(
-        x=hood_data.index,
+        x=hood_data_pc.index,
         y=hood_data_pc[HOOD_LIST_SORTED[i]].drop(columns=['National Mall','DC Medical Center']),
         mode='lines',
         line=dict(
@@ -1251,7 +1251,7 @@ fig.update_layout(
 fig.write_html('chart_htmls/nhood_pc.html')
 
 # Neighborhoods Tests Per capita
-ntests = data.loc[:,'16th St Heights Tests':'Capitol Hill Tests'].dropna().diff().rolling('7d').sum()/7
+ntests = data.loc[:,'16th St Heights Tests':'Capitol Hill Tests'].diff(periods=7)/7
 ntests.columns = HOOD_LIST
 ntests_pc = ntests.divide(hood_demos['Population (2019 ACS)'])*10000
 fig = go.Figure(layout=layout)
