@@ -171,8 +171,8 @@ fig.add_trace(go.Bar(
     marker_color='maroon'
 ))
 fig.add_trace(go.Scatter(
-    x=data['Deaths'].dropna().index,
-    y=data['Deaths'].dropna().diff().rolling('7d').sum()/7,
+    x=data['Deaths'].index,
+    y=data['Deaths'].diff(periods=7)/7,
     name='7-Day Average',
     mode='lines',
     line=dict(
