@@ -129,22 +129,22 @@ fig.add_trace(go.Scatter(
 #     hovertemplate='%{y:,.1f}'
 
 # ))
-fig.add_annotation(
-            x = '2020-12-26',
-            y = 492,
-            xanchor = 'right',
-            text="Includes Cases<br>from 12/25",
-            showarrow=True,
-            arrowhead=1,
-)
-fig.add_annotation(
-            x = '2021-03-08',
-            y = 331,
-            xanchor = 'right',
-            text="Includes 196 Cases<br>from February",
-            showarrow=True,
-            arrowhead=1,
-)
+# fig.add_annotation(
+#             x = '2020-12-26',
+#             y = 492,
+#             xanchor = 'right',
+#             text="Includes Cases<br>from 12/25",
+#             showarrow=True,
+#             arrowhead=1,
+# )
+# fig.add_annotation(
+#             x = '2021-03-08',
+#             y = 331,
+#             xanchor = 'right',
+#             text="Includes 196 Cases<br>from February",
+#             showarrow=True,
+#             arrowhead=1,
+# )
 fig.update_layout(
     title=dict(
         text='New Cases'
@@ -181,13 +181,13 @@ fig.add_trace(go.Scatter(
     hovertemplate='%{y:,.1f}'
 
 ))
-fig.add_annotation(
-            x = '2020-12-26',
-            y = 6,
-            xanchor = 'right',
-            text="Includes Deaths<br>from 12/25",
-            showarrow=True,
-            arrowhead=1)
+# fig.add_annotation(
+#             x = '2020-12-26',
+#             y = 6,
+#             xanchor = 'right',
+#             text="Includes Deaths<br>from 12/25",
+#             showarrow=True,
+#             arrowhead=1)
 
 fig.update_layout(
     title=dict(
@@ -223,13 +223,13 @@ fig.add_trace(go.Scatter(
     hovertemplate='%{y:,.1f}'
 
 ))
-fig.add_annotation(
-            x = '2020-12-26',
-            y = 18440,
-            xanchor = 'right',
-            text="Includes Tests<br>from 12/25",
-            showarrow=True,
-            arrowhead=1)
+# fig.add_annotation(
+#             x = '2020-12-26',
+#             y = 18440,
+#             xanchor = 'right',
+#             text="Includes Tests<br>from 12/25",
+#             showarrow=True,
+#             arrowhead=1)
 
 fig.update_layout(
     title=dict(
@@ -317,7 +317,7 @@ fig.update_layout(
 fig.write_html("./chart_htmls/ages.html")
 
 # New Cases Makeup
-age_daily_s = ages_data*7
+age_daily_s = ages_data.dropna()*7
 age_daily_s_pct = age_daily_s.divide(age_daily_s.sum(axis=1),axis=0)
 fig = go.Figure(layout=layout)
 for i in range(8):
@@ -647,7 +647,7 @@ fig.update_layout(
 fig.write_html("./chart_htmls/wards.html")
 
 #Ward Breakdown
-ward_daily_s = data.loc[:,WARD_LIST].diff(periods=7)/7
+ward_daily_s = data.loc[:,WARD_LIST].diff(periods=7).dropna()/7
 ward_daily_s_pct = ward_daily_s.divide(ward_daily_s.sum(axis=1),axis=0)
 fig = go.Figure(layout=layout)
 for i in range(8):
