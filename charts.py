@@ -396,30 +396,35 @@ fig.write_html("./chart_htmls/ages_deaths_pie.html")
 
 #New age chart
 age_demos = pd.read_csv('age_demos.csv',index_col=0)
+age_demos_all = pd.read_csv('age_demos.csv',index_col=0).drop(['25-44 Cases','45-64 Cases','65+ Cases'])
 age_demos = age_demos.loc[['0-4 Cases','5-14 Cases','15-19 Cases','20-24 Cases','25-44 Cases','45-64 Cases','65+ Cases'],:]
-# age_data = data.loc[:,'0-4 Cases':'75+ Cases'].dropna().diff().rolling('7d').sum()/7
+
 age_data = data.loc[:,'0-4 Cases':'75+ Cases'].diff(periods=7)/7
+age_data_all = data.loc[:,'0-4 Cases':'75+ Cases'].diff(periods=7)/7
+
 age_data['25-44 Cases'] = age_data['25-34 Cases']+age_data['35-44 Cases']
 age_data['45-64 Cases'] = age_data['45-54 Cases']+age_data['55-64 Cases']
 age_data['65+ Cases'] = age_data['65-74 Cases']+age_data['75+ Cases']
 age_data = age_data.drop(columns=['25-34 Cases','35-44 Cases','45-54 Cases','55-64 Cases','65-74 Cases','75+ Cases'])
-print(age_data)
-print(age_demos)
-age_data_pc = age_data.divide(age_demos['Population (2019 ACS)'])*10000
 
+age_data_pc = age_data.divide(age_demos['Population (2019 ACS)'])*10000
+age_data_all_pc = age_data_all.divide(age_demos_all['Population (2019 ACS)'])*10000
 fig = go.Figure(layout=layout)
-for i in range(len(age_data.columns)):
+i=0
+for age in age_data_all.columns:
+    print(age+' '+ str(i))
     fig.add_trace(go.Scatter(
-        x=age_data.index,
-        y=age_data.iloc[:,i],
-        name=AGES_LIST_CENSUS[i],
+        x=age_data_all.index,
+        y=age_data_all[age],
+        name=age[:-6],
         mode='lines',
         line=dict(
             color=G10[i],
-            width=2
+            width=1.5
         ),
         hovertemplate='%{y:.1f}'
     ))
+    i+=1
 
 fig.update_layout(
     title=dict(
@@ -444,21 +449,23 @@ fig.write_html("./chart_htmls/ages_census.html")
 
 fig = go.Figure(layout=layout)
 # ages_data = data.loc[:,'0-4 Cases':'75+ Cases'].diff().rolling(7).mean()
-for i in range(len(age_data.columns)):
+i = 0
+for age in age_data_all.columns:
     fig.add_trace(go.Scatter(
-        x=age_data.index,
-        y=age_data_pc.iloc[:,i],
-        name=AGES_LIST_CENSUS[i],
+        x=age_data_all.index,
+        y=age_data_all_pc[age],
+        name=age[:-6],
         mode='lines',
         line=dict(
             color=G10[i],
-            width=2
+            width=1.5
         ),
 #         stackgroup='one',
     ))
+    i+=1
 
 fig.add_trace(go.Scatter(
-    x=data['Positives'].dropna().index,
+    x=data['Positives'].index,
     y=data['Positives'].diff(periods=7).divide(ward_demos.loc['All Wards','Population (2019 ACS)'])*10000/7,
     mode='lines',
     line=dict(
