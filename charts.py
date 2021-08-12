@@ -466,7 +466,7 @@ for age in age_data_all.columns:
 
 fig.add_trace(go.Scatter(
     x=data['Positives'].index,
-    y=data['Positives'].diff(periods=7).divide(ward_demos.loc['All Wards','Population (2019 ACS)'])*10000/7,
+    y=data['Positives'].diff(periods=7).divide(ward_demos.loc['All Wards','Population (2020 Decennial Census)'])*10000/7,
     mode='lines',
     line=dict(
         color='black',
@@ -685,8 +685,8 @@ fig.write_html("./chart_htmls/wards_breakdown.html")
 
 # Per Capita Ward Cases
 fig = go.Figure(layout=layout)
-ward_avg_pc = np.divide(ward_avg,ward_demos.loc[WARD_LIST,'Population (2019 ACS)'])*10000
-dc_avg_pc = np.divide(data['Positives'].diff(periods=7)/7, ward_demos.loc['All Wards','Population (2019 ACS)'])*10000
+ward_avg_pc = np.divide(ward_avg,ward_demos.loc[WARD_LIST,'Population (2020 Decennial Census)'])*10000
+dc_avg_pc = np.divide(data['Positives'].diff(periods=7)/7, ward_demos.loc['All Wards','Population (2020 Decennial Census)'])*10000
 for i in range(8):
     fig.add_trace(go.Scatter(
         x=ward_avg_pc.index,
@@ -795,7 +795,7 @@ fig.write_html('./chart_htmls/wards_deaths.html')
 
 # Ward Test Rates
 fig = go.Figure(layout=layout)
-ward_test_pc = ward_tests.divide(ward_demos.loc[WARD_LIST,'Population (2019 ACS)'])*10000
+ward_test_pc = ward_tests.divide(ward_demos.loc[WARD_LIST,'Population (2020 Decennial Census)'])*10000
 for i in range(8):
     fig.add_trace(go.Scatter(
         x=ward_test_pc.index,
@@ -805,7 +805,7 @@ for i in range(8):
             color=PASTELS[i]
         )
     ))
-dc_tests = np.divide(data['Tested'].diff(periods=7)/7, ward_demos.loc['All Wards','Population (2019 ACS)'])*10000
+dc_tests = np.divide(data['Tested'].diff(periods=7)/7, ward_demos.loc['All Wards','Population (2020 Decennial Census)'])*10000
 fig.add_trace(go.Scatter(
     x=dc_tests.index,
     y=dc_tests,
@@ -862,7 +862,7 @@ fig.write_html("./chart_htmls/wards_tests_breakdown.html")
 fig = go.Figure(layout=layout)
 ward_daily_s_tests_pct.columns = WARD_LIST
 ward_daily_s_pct
-ward_demos['makeup'] = ward_demos.loc[WARD_LIST,'Population (2019 ACS)']
+ward_demos['makeup'] = ward_demos.loc[WARD_LIST,'Population (2020 Decennial Census)']
 
 ############## Hospital Statistics ####################
 # COVID Patients Only
@@ -1909,7 +1909,7 @@ fig.write_html("./chart_htmls/mpd_cases.html")
 #
 #
 #
-dc_pop = ward_demos.loc['All Wards','Population (DC Data)']
+dc_pop = ward_demos.loc['All Wards','Population (2020 Decennial Census)']
 
 fig = go.Figure(layout=layout)
 fig.add_trace(go.Bar(
@@ -2709,7 +2709,7 @@ for hood in sorted(HOOD_LIST):
 
 fig.add_trace(go.Scatter(
     x = vax.index,
-    y = vax['Cumulative Full Doses: Residents']/ward_demos.loc['All Wards','Population (2019 ACS)'],
+    y = vax['Cumulative Full Doses: Residents']/ward_demos.loc['All Wards','Population (2020 Decennial Census)'],
     mode='lines',
     line=dict(
         color='black',
@@ -2721,7 +2721,7 @@ fig.add_trace(go.Scatter(
 ))
 fig.add_trace(go.Scatter(
     x = vax.index,
-    y = vax['Cumulative Partial Doses: Residents']/ward_demos.loc['All Wards','Population (2019 ACS)'],
+    y = vax['Cumulative Partial Doses: Residents']/ward_demos.loc['All Wards','Population (2020 Decennial Census)'],
     mode='lines',
     line=dict(
         color='black',
@@ -2846,7 +2846,7 @@ fig.update_layout(
 fig.write_html('./chart_htmls/nhood_vax_65.html')
 
 ward_vax = vax.loc[:,'Ward 1':'Ward 8'].dropna()
-ward_vax = ward_vax.divide(ward_demos['Population (2019 ACS)'])
+ward_vax = ward_vax.divide(ward_demos['Population (2020 Decennial Census)'])
 
 ward_vax_65 = vax.loc[:,'Ward 1 65+':'Ward 8 65+'].dropna()
 ward_vax_65.columns = WARD_LIST
@@ -3033,7 +3033,7 @@ for ward in WARD_LIST:
     
 fig.add_trace(go.Scatter(
     x = vax['Cumulative Full Doses: Residents'].index,
-    y = vax['Cumulative Full Doses: Residents']/ward_demos.loc['All Wards','Population (2019 ACS)'],
+    y = vax['Cumulative Full Doses: Residents']/ward_demos.loc['All Wards','Population (2020 Decennial Census)'],
     mode='lines',
     line=dict(
         color='black',
@@ -3046,7 +3046,7 @@ fig.add_trace(go.Scatter(
 
 fig.add_trace(go.Scatter(
     x = vax['Cumulative Partial Doses: Residents'].dropna().index,
-    y = vax['Cumulative Partial Doses: Residents'].dropna()/ward_demos.loc['All Wards','Population (2019 ACS)'],
+    y = vax['Cumulative Partial Doses: Residents'].dropna()/ward_demos.loc['All Wards','Population (2020 Decennial Census)'],
     mode='lines',
     line=dict(
         color='black',
