@@ -1616,10 +1616,10 @@ fig.add_trace(go.Scattermapbox(
         color='green',
     ),
     text='<b>'+open_schools['NAME']+'</b>'+
-         '<br>Total Case Notifications: '+open_schools['Number of Notifications'].astype(str)+
-         '<br>'+open_schools['Students Scheduled for In-Person Programming in Term 3 (As of 2.4.21)'].astype(str)+'/'+open_schools['TOTAL_STUD'].astype(str)+
-         ' Students Scheduled for<br>In-Person Learning'+
-         '<br>Open '+open_schools['Days per Week'],
+         '<br>Total Case Notifications: '+open_schools['Number of Notifications'].astype(str),
+        #  '<br>'+open_schools['Students Scheduled for In-Person Programming in Term 3 (As of 2.4.21)'].astype(str)+'/'+open_schools['TOTAL_STUD'].astype(str)+
+        #  ' Students Scheduled for<br>In-Person Learning'+
+        #  '<br>Open '+open_schools['Days per Week'],
     hoverinfo='text',
     name = 'Open DCPS Schools'
 
@@ -1635,10 +1635,10 @@ fig.add_trace(go.Scattermapbox(
     ),
     text='<b>'+cases_not_closed['NAME']+
       '</b><br>Case Last Reported on Campus: '+cases_not_closed['Most Recent Day of Case'].apply(lambda x: x.strftime('%m/%d'))+
-      '<br>Total Case Notifications: '+cases_not_closed['Number of Notifications'].astype(str)+
-      '<br>'+cases_not_closed['Students Scheduled for In-Person Programming in Term 3 (As of 2.4.21)'].astype(str)+'/'+cases_not_closed['TOTAL_STUD'].astype(str)+
-      ' Students Scheduled for<br>In-Person Learning'+
-      '<br>Open '+cases_not_closed['Days per Week'],
+      '<br>Total Case Notifications: '+cases_not_closed['Number of Notifications'].astype(str),
+    #   '<br>'+cases_not_closed['Students Scheduled for In-Person Programming in Term 3 (As of 2.4.21)'].astype(str)+'/'+cases_not_closed['TOTAL_STUD'].astype(str)+
+    #   ' Students Scheduled for<br>In-Person Learning'+
+    #   '<br>Open '+cases_not_closed['Days per Week'],
     hoverinfo='text',
     name = 'Case Reported on Campus in Last 2 Weeks'
 
@@ -1655,12 +1655,12 @@ fig.add_trace(go.Scattermapbox(
     ),
     text='<b>'+cases_closed['NAME']+
          '</b><br>Case Last Reported on Campus: '+cases_closed['Most Recent Day of Case'].apply(lambda x: x.strftime('%m/%d'))+
-         '<br>Total Case Notifications: '+cases_closed['Number of Notifications'].astype(str)+
-         '<br>'+cases_closed['Students Scheduled for In-Person Programming in Term 3 (As of 2.4.21)'].astype(str)+'/'+cases_closed['TOTAL_STUD'].astype(str)+
-         ' Students Scheduled for<br>In-Person Learning'+
-         '<br>Open '+cases_closed['Days per Week'],
+         '<br>Total Case Notifications: '+cases_closed['Number of Notifications'].astype(str),
+        #  '<br>'+cases_closed['Students Scheduled for In-Person Programming in Term 3 (As of 2.4.21)'].astype(str)+'/'+cases_closed['TOTAL_STUD'].astype(str)+
+        #  ' Students Scheduled for<br>In-Person Learning'+
+        #  '<br>Open '+cases_closed['Days per Week'],
     hoverinfo='text',
-    name = 'Classroom Transition to Online Learning Reported Due to COVID-19'
+    name = '10 day Quarantine Required for Impacted Classroom Due to COVID-19'
 ))
 
 fig.update_layout(
@@ -1737,8 +1737,13 @@ fig.update_layout(
         showspikes = False,
     ),
     legend=dict(
-        bgcolor = 'rgba(0,0,0,0)'
-    )
+        bgcolor = 'rgba(0,0,0,0)',
+        y = -.1,
+        yanchor='top',
+        x = .5,
+        xanchor='center',
+        orientation='h'
+    ),
 )
 fig.update_xaxes(
     range=['2020-11-18',data.index[-1]],
