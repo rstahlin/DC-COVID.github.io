@@ -1736,6 +1736,9 @@ fig.update_layout(
     xaxis=dict(
         showspikes = False,
     ),
+    yaxis=dict(
+        rangemode='nonnegative'
+    ),
     legend=dict(
         bgcolor = 'rgba(0,0,0,0)',
         y = -.1,
