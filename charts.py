@@ -1029,8 +1029,8 @@ fig.write_html("./chart_htmls/patients_ventilator.html")
 ############# MAPS #################
 hood_data = data.loc[:,'16th St Heights':'Capitol Hill'].diff(periods=7).dropna()/7
 hood_data_pc = hood_data.divide(hood_demos['Population (2019 ACS)'])*10000
-rolling_cases = data.loc[:,'16th St Heights':'Capitol Hill'].diff(periods=7).dropna()
-rolling_tests = data.loc[:,'16th St Heights Tests':'Capitol Hill Tests'].diff(periods=7).dropna()
+rolling_cases = data.loc[:,'16th St Heights':'Capitol Hill'].diff(periods=7)
+rolling_tests = data.loc[:,'16th St Heights Tests':'Capitol Hill Tests'].diff(periods=7)
 rolling_tests.columns = rolling_cases.columns
 hood_positive = rolling_cases.divide(rolling_tests)
 pos_this_week = hood_positive.iloc[-1,:].sort_values()
